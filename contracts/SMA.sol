@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.19;
 
-import "./SMAInterfaces.sol" as Interfaces;
-import "./SMAUtils.sol" as UtilsLib;
-import "./SMAStructs.sol" as Structs;
+import "./interfaces/SMAInterfaces.sol" as Interfaces;
+import "./utils/SMAUtils.sol" as UtilsLib;
+import "./data_structs/SMAStructs.sol" as Structs;
 
 contract SMA {
     address public client;
