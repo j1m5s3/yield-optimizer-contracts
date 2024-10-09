@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.27;
 
-import "./SMAStructs.sol" as Structs;
+import "./data_structs/SMAStructs.sol" as Structs;
 /*
 Admin contract that will control the subscription fees individually and
 */

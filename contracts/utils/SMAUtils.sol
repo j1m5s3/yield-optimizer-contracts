@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.27;
 
-import "./SMAStructs.sol";
+import "../data_structs/SMAStructs.sol";
 
 library SMAUtils {
 

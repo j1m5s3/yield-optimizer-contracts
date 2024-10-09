@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.27;
 
 import "./SMA.sol"; // SMA contract
-import "./SMAStructs.sol"; // Various structs for the SMA contract to operate
-import "./SMAInterfaces.sol"; // Various interfaces for the SMA contract to operate
+import "./data_structs/SMAStructs.sol"; // Various structs for the SMA contract to operate
+import "./interfaces/SMAInterfaces.sol"; // Various interfaces for the SMA contract to operate
 /*
 This contract will facilitate the deploy of new SMA contracts that the client and
 the bots that will manage the protfolio, will share.

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.27;
 
 import "./interfaces/SMAInterfaces.sol" as Interfaces;
 import "./utils/SMAUtils.sol" as UtilsLib;

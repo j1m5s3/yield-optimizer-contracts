@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.27;
 
-import "./SMAStructs.sol";
+import "../data_structs/SMAStructs.sol";
 
 /**
  * @dev Interface of the ERC-20 standard as defined in the ERC.
