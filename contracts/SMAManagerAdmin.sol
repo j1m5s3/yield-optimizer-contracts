@@ -20,6 +20,7 @@ contract SMAManagerAdmin {
     Structs.SMAStructs.InterestTokens[] public allowedInterestTokens; // Allowed interest tokens
 
     mapping(address => Structs.SMAStructs.SMA) public SMAs; // Mapping of client address to their SMA
+    mapping(string => address) public PROTOCOL_POOL_CONTRACTS; // Mapping of protocol to pool contract
 
     constructor(
         address _admin,
@@ -62,6 +63,10 @@ contract SMAManagerAdmin {
         MAX_ALLOWED_SMAS = _maxAllowed;
     }
 
+    function addProtocolPoolContractAddress(string memory _protocol, address _poolContract) external onlyAdmin{
+        PROTOCOL_POOL_CONTRACTS[_protocol] = _poolContract;
+    }
+
     // Reads
     function getAllowedTokens() external view returns(Structs.SMAStructs.OperableToken[] memory){
         return allowedTokens;
@@ -89,6 +94,10 @@ contract SMAManagerAdmin {
 
     function getSMA(address _client) external view returns(Structs.SMAStructs.SMA memory){
         return SMAs[_client];
+    }
+
+    function getPrtocolPoolContractAddress(string memory _protocol) external view returns(address){
+        return PROTOCOL_POOL_CONTRACTS[_protocol];
     }
 
     // Modifiers

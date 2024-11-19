@@ -90,6 +90,10 @@ contract SMA {
         require(transferSuccess, "Transfer failed. Please try again.");
     }
 
+    function invest(address _asset, string memory _fromProto, string memory _toProto) external onlyAllowed {
+        
+    }
+
     /*
     function paySubscription() external onlyClient {
         bool transferSuccess;
