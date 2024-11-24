@@ -13,6 +13,7 @@ contract SMA {
     address public smaAddressProvider;
 
     bool public subscriptionPaid; // Boolean describing if the client has paid their subscription
+    bool public activelyManaged; // Boolean describing if the SMA is actively managed
     uint256 timeCreated; // Timestamp of when SMA was created
     uint256 nextPaymentDue; // Timestamp of when the next payment is due
 
@@ -96,6 +97,10 @@ contract SMA {
         smaInterfaces.IManagementLogic(
             smaInterfaces.ISMAAddressProvider(smaAddressProvider).getManagementLogic()
             ).invest(_asset, _fromProto, _toProto);
+    }
+
+    function setActiveManagement(bool _active) external onlyClient {
+        activelyManaged = _active;
     }
 
     /*
