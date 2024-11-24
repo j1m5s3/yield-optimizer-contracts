@@ -96,3 +96,27 @@ interface ISMAManagerAdmin {
     //write
     function updateSMA(address _client, SMAStructs.SMA memory _sma) external;
 }
+
+interface ISMAOracle {
+    function getFee() external view returns (uint256);
+
+    function getBestRateProtocol(address _asset) external view returns (string memory);
+}
+
+interface IManagementLogic {
+    function invest(address _asset, string memory _fromProto, string memory _toProto) external;
+}
+
+interface ISMAAddressProvider {
+       function getSMAFactory() external view returns (address);
+
+    function getSMAManagerAdmin() external view returns (address);
+
+    function getSMAManager() external view returns (address);
+
+    function getOracle() external view returns (address);
+
+    function getProtocolAddress(string memory _protocolName) external view returns (address);
+
+    function getManagementLogic() external view returns (address);
+}

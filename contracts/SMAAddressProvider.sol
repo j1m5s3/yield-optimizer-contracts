@@ -6,15 +6,23 @@ contract SMAAddressProvider {
     address public smaFactory;
     address public smaManagerAdmin;
     address public smaManager;
-    address public smaFeeOracle;
+    address public smaOracle;
     address public admin;
+    address public managementLogic;
     mapping (string => address) PROTOCOL_ADDRESSES;
 
-    constructor(address _smaFactory, address _smaManagerAdmin, address _smaManager, address _smaFeeOracle) {
+    constructor(
+        address _smaFactory, 
+        address _smaManagerAdmin, 
+        address _smaManager, 
+        address _smaOracle,
+        address _managementLogic
+    ) {
         smaFactory = _smaFactory;
         smaManagerAdmin = _smaManagerAdmin;
         smaManager = _smaManager;
-        smaFeeOracle = _smaFeeOracle;
+        smaOracle = _smaOracle;
+        managementLogic = _managementLogic;
         admin = msg.sender;
     }
 
@@ -30,12 +38,45 @@ contract SMAAddressProvider {
         return smaManager;
     }
 
+    function getOracle() external view returns (address) {
+        return smaOracle;
+    }
+
     function getProtocolAddress(string memory _protocolName) external view returns (address) {
         return PROTOCOL_ADDRESSES[_protocolName];
     }
 
-    function setProtocolAddress(string memory _protocolName, address _protocolAddress) external {
+    function getManagementLogic() external view returns (address) {
+        return managementLogic;
+    }
+
+    function setProtocolAddress(string memory _protocolName, address _protocolAddress) external onlyAdmin{
         PROTOCOL_ADDRESSES[_protocolName] = _protocolAddress;
+    }
+
+    function setSMAFactory(address _smaFactory) external onlyAdmin{
+        smaFactory = _smaFactory;
+    }
+
+    function setSMAManagerAdmin(address _smaManagerAdmin) external onlyAdmin{
+        smaManagerAdmin = _smaManagerAdmin;
+    }
+
+    function setSMAManager(address _smaManager) external onlyAdmin{
+        smaManager = _smaManager;
+    }
+
+    function setOracle(address _smaFeeOracle) external onlyAdmin{
+        smaOracle = _smaFeeOracle;
+    }
+
+    function setManagementLogic(address _managementLogic) external onlyAdmin{
+        managementLogic = _managementLogic;
+    }
+
+    modifier onlyAdmin {
+        require(msg.sender == admin, "Only Admin address can access");
+        _;
     }
 
 }

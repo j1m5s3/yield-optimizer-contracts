@@ -6,12 +6,14 @@ This contract will store the ETH denominated fee that clients will pay on creati
 */
 
 
-contract SMAFeeOracle {
+contract SMAOracle {
     address public admin;
     address public smaAddressProvider;
 
     uint256 public fee;
     string public bestRateProtocolName;
+
+    mapping(address => string) public tokenBestRateProtocol;
 
     constructor(address _smaAddressProvider) {
         admin = msg.sender;
@@ -22,16 +24,17 @@ contract SMAFeeOracle {
         fee = _fee;
     }
 
-    function setBestRateProtocol(string memory _protocolName) external onlyAdmin{
-        bestRateProtocolName = _protocolName;
+    function setBestRateProtocol(address _asset, string memory _protocolName) external onlyAdmin{
+        tokenBestRateProtocol[_asset] = _protocolName;
     }
 
     function getFee() external view returns (uint256) {
         return fee;
     }
 
-    function getBestRateProtocol() external view returns (string memory) {
-        return bestRateProtocolName;
+    function getBestRateProtocol(address _asset) external view returns (string memory) {
+        string memory protocolName = tokenBestRateProtocol[_asset];
+        return protocolName;
     }
 
     modifier onlyAdmin {

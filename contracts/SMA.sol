@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.27;
 
-import "./interfaces/SMAInterfaces.sol" as Interfaces;
+import "./interfaces/SMAInterfaces.sol" as smaInterfaces;
 import "./utils/SMAUtils.sol" as UtilsLib;
 import "./data_structs/SMAStructs.sol" as Structs;
 
@@ -10,14 +10,16 @@ contract SMA {
     address public client;
     address public manager;
     address public adminContract;
+    address public smaAddressProvider;
 
     bool public subscriptionPaid; // Boolean describing if the client has paid their subscription
     uint256 timeCreated; // Timestamp of when SMA was created
     uint256 nextPaymentDue; // Timestamp of when the next payment is due
 
-    constructor(address _client, address _admin) {
+    constructor(address _client, address _admin, address _addressProvider) {
         client = _client;
         adminContract = _admin;
+        smaAddressProvider = _addressProvider;
 
         timeCreated = block.timestamp;
         nextPaymentDue = timeCreated + 30 days; // Pay periods are 30 days
@@ -46,13 +48,13 @@ contract SMA {
     */
     function transferFromClient(address _asset, uint256 _amount) external onlyClient {
         bool transferSuccess;
-        Interfaces.IERC20 token;
+        smaInterfaces.IERC20 token;
         Structs.SMAStructs.OperableToken[] memory allowedTokens;
 
-        allowedTokens = Interfaces.ISMAManagerAdmin(adminContract).getAllowedTokens();
+        allowedTokens = smaInterfaces.ISMAManagerAdmin(adminContract).getAllowedTokens();
 
         require(UtilsLib.SMAUtils.assetIsOperable(_asset, allowedTokens) == true, "Asset is not operable.");
-        token = Interfaces.IERC20(_asset);
+        token = smaInterfaces.IERC20(_asset);
 
         require(token.allowance(msg.sender, address(this)) >= _amount, "Allowance not enough. Please approve more tokens.");
 
@@ -69,13 +71,13 @@ contract SMA {
     function transferFromSMA(address _asset, uint256 _amount) external onlyAllowed {
         bool transferSuccess;
         bool approved;
-        Interfaces.IERC20 token;
+        smaInterfaces.IERC20 token;
         Structs.SMAStructs.OperableToken[] memory allowedTokens;
 
-        allowedTokens = Interfaces.ISMAManagerAdmin(adminContract).getAllowedTokens();
+        allowedTokens = smaInterfaces.ISMAManagerAdmin(adminContract).getAllowedTokens();
 
         require(UtilsLib.SMAUtils.assetIsOperable(_asset, allowedTokens) == true, "Asset is not operable.");
-        token = Interfaces.IERC20(_asset);
+        token = smaInterfaces.IERC20(_asset);
 
         approved = token.approve(address(this), _amount);
         require(approved, "Approval failed. Please try again.");
@@ -90,18 +92,20 @@ contract SMA {
         require(transferSuccess, "Transfer failed. Please try again.");
     }
 
-    function clientInvest(address _asset, string memory _fromProto, string memory _toProto) external onlyAllowed {
-        
+    function Invest(address _asset, string memory _fromProto, string memory _toProto) external onlyAllowed {
+        smaInterfaces.IManagementLogic(
+            smaInterfaces.ISMAAddressProvider(smaAddressProvider).getManagementLogic()
+            ).invest(_asset, _fromProto, _toProto);
     }
 
     /*
     function paySubscription() external onlyClient {
         bool transferSuccess;
-        Interfaces.IERC20 token;
+        smaInterfaces.IERC20 token;
 
         require(subscriptionPaid == false, "Subscription already paid.");
 
-        token = Interfaces.IERC20(UtilsLib.SMAUtils.allowedPayToken());
+        token = smaInterfaces.IERC20(UtilsLib.SMAUtils.allowedPayToken());
         require(token.allowance(msg.sender, address(this)) >= SMAUtils.subscriptionFee(), "Allowance not enough. Please approve more tokens.");
 
         transferSuccess = token.transferFrom(client, address(this), SMAUtils.subscriptionFee());
