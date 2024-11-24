@@ -14,6 +14,7 @@ contract SMAFactory {
 
     address public portfolioManager;
     address public adminContract;
+    address public smaAddressProvider;
 
     uint256 public NUM_SMAS_DEPLOYED;
     uint256 public MAX_ALLOWED_SMAS; // Max allowed SMAS to be deployed
@@ -27,9 +28,10 @@ contract SMAFactory {
         string message
     );
 
-    constructor(address _portfolioManager, address _adminContract) {
+    constructor(address _portfolioManager, address _adminContract, address _smaAddressProvider) {
         portfolioManager = _portfolioManager;
         adminContract = _adminContract;
+        smaAddressProvider = _smaAddressProvider;
 
         NUM_SMAS_DEPLOYED = 0;
     }
@@ -48,7 +50,7 @@ contract SMAFactory {
         require(NUM_SMAS_DEPLOYED < MAX_ALLOWED_SMAS, "MAX_ALLOWED_SMAS have been deployed");
 
         // Deploy SMA contract via this function
-        SMA smaContract = new SMA(_prospectiveClient, adminContract);
+        SMA smaContract = new SMA(_prospectiveClient, adminContract, smaAddressProvider);
         address contractAddress = address(smaContract);
 
         ISMAManagerAdmin admin = ISMAManagerAdmin(adminContract);
