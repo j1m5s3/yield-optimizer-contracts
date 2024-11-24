@@ -32,7 +32,7 @@ interface IAAVEPool {
 
 }
 
-interface CompoundPool {
+interface ICompoundPool {
     function supply(address asset, uint amount) external;
     function withdraw(address asset, uint amount) external;
 }
