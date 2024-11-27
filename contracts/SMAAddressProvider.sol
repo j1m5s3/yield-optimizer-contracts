@@ -9,6 +9,8 @@ contract SMAAddressProvider {
     address public smaOracle;
     address public admin;
     address public managementLogic;
+    address public managementRegistry;
+
     mapping (string => address) PROTOCOL_ADDRESSES;
 
     constructor(
@@ -16,13 +18,16 @@ contract SMAAddressProvider {
         address _smaManagerAdmin, 
         address _smaManager, 
         address _smaOracle,
-        address _managementLogic
+        address _managementLogic,
+        address _managementRegistry
     ) {
         smaFactory = _smaFactory;
         smaManagerAdmin = _smaManagerAdmin;
         smaManager = _smaManager;
         smaOracle = _smaOracle;
         managementLogic = _managementLogic;
+        managementRegistry = _managementRegistry;
+
         admin = msg.sender;
     }
 
@@ -50,6 +55,10 @@ contract SMAAddressProvider {
         return managementLogic;
     }
 
+    function getManagementRegistry() external view returns (address) {
+        return managementRegistry;
+    }
+
     function setProtocolAddress(string memory _protocolName, address _protocolAddress) external onlyAdmin{
         PROTOCOL_ADDRESSES[_protocolName] = _protocolAddress;
     }
@@ -72,6 +81,10 @@ contract SMAAddressProvider {
 
     function setManagementLogic(address _managementLogic) external onlyAdmin{
         managementLogic = _managementLogic;
+    }
+
+    function setManagementRegistry(address _managementRegistry) external onlyAdmin{
+        managementRegistry = _managementRegistry;
     }
 
     modifier onlyAdmin {

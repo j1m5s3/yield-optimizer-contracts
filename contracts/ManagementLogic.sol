@@ -9,6 +9,15 @@ contract ManagementLogic {
     address public admin;
     address public smaAddressProvider;
 
+    event InvestAction(
+        address sma,
+        address asset,
+        string fromProto,
+        string toProto,
+        uint256 amount,
+        uint256 timestamp
+    );
+
     constructor(address _smaAddressProvider) {
         admin = msg.sender;
         smaAddressProvider = _smaAddressProvider;

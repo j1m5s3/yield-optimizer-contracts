@@ -93,7 +93,7 @@ contract SMA {
         require(transferSuccess, "Transfer failed. Please try again.");
     }
 
-    function Invest(address _asset, string memory _fromProto, string memory _toProto) external onlyAllowed {
+    function invest(address _asset, string memory _fromProto, string memory _toProto) external onlyAllowed {
         smaInterfaces.IManagementLogic(
             smaInterfaces.ISMAAddressProvider(smaAddressProvider).getManagementLogic()
             ).invest(_asset, _fromProto, _toProto);

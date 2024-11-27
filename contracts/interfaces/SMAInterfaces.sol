@@ -108,7 +108,7 @@ interface IManagementLogic {
 }
 
 interface ISMAAddressProvider {
-       function getSMAFactory() external view returns (address);
+    function getSMAFactory() external view returns (address);
 
     function getSMAManagerAdmin() external view returns (address);
 
@@ -119,4 +119,6 @@ interface ISMAAddressProvider {
     function getProtocolAddress(string memory _protocolName) external view returns (address);
 
     function getManagementLogic() external view returns (address);
+
+    function getManagementRegistry() external view returns (address);
 }
