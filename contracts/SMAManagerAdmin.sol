@@ -14,7 +14,7 @@ contract SMAManagerAdmin {
     uint256 public payPeriod; // Pay period for the subscription
     uint256 public subscriptionFee; // Subscription fee for the client
 
-    uint256 public MAX_ALLOWED_SMAS = 5;
+    uint256 public MAX_ALLOWED_SMAS;
 
     Structs.SMAStructs.OperableToken[] public allowedTokens; // Allowed base tokens that that user desires yield for
     Structs.SMAStructs.InterestTokens[] public allowedInterestTokens; // Allowed interest tokens
@@ -26,12 +26,15 @@ contract SMAManagerAdmin {
         address _admin,
         address _allowedPayToken,
         uint256 _payPeriod,
-        uint256 _subscriptionFee
+        uint256 _subscriptionFee,
+        uint256 _maxAllowedSMAS
     ){
         admin = _admin;
         allowedPayToken = _allowedPayToken;
         payPeriod = _payPeriod;
         subscriptionFee = _subscriptionFee;
+
+        MAX_ALLOWED_SMAS = _maxAllowedSMAS;
     }
 
     // Writes
@@ -51,7 +54,11 @@ contract SMAManagerAdmin {
         subscriptionFee = _subscriptionFee;
     }
 
-    function updateSMA(address _client, Structs.SMAStructs.SMA memory _sma) external onlyAdminOrFactory{
+    function setWalletAdmin(address _admin) external onlyAdmin{
+        admin = _admin;
+    }
+
+    function addSMA(address _client, Structs.SMAStructs.SMA memory _sma) external onlyAdminOrFactory{
         SMAs[_client] = _sma;
     }
 
@@ -68,6 +75,10 @@ contract SMAManagerAdmin {
     }
 
     // Reads
+    function getMaxAllowedSMAs() external view returns(uint256){
+        return MAX_ALLOWED_SMAS;
+    }
+
     function getAllowedTokens() external view returns(Structs.SMAStructs.OperableToken[] memory){
         return allowedTokens;
     }
@@ -96,8 +107,12 @@ contract SMAManagerAdmin {
         return SMAs[_client];
     }
 
-    function getPrtocolPoolContractAddress(string memory _protocol) external view returns(address){
+    function getProtocolPoolContractAddress(string memory _protocol) external view returns(address){
         return PROTOCOL_POOL_CONTRACTS[_protocol];
+    }
+
+    function getWalletAdmin() external view returns(address){
+        return admin;
     }
 
     // Modifiers

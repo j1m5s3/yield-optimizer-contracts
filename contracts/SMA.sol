@@ -2,14 +2,19 @@
 
 pragma solidity ^0.8.27;
 
-import "./interfaces/SMAInterfaces.sol" as smaInterfaces;
-import "./utils/SMAUtils.sol" as UtilsLib;
-import "./data_structs/SMAStructs.sol" as Structs;
+import {
+    ISMAManagerAdmin, 
+    ISMAAddressProvider, 
+    IERC20, 
+    IManagementLogic, 
+    IManagementRegistry
+} from "./interfaces/SMAInterfaces.sol";
+import {SMAUtils} from "./utils/SMAUtils.sol";
+import {SMAStructs} from "./data_structs/SMAStructs.sol";
 
 contract SMA {
     address public client;
     address public manager;
-    address public adminContract;
     address public smaAddressProvider;
 
     bool public subscriptionPaid; // Boolean describing if the client has paid their subscription
@@ -17,9 +22,8 @@ contract SMA {
     uint256 timeCreated; // Timestamp of when SMA was created
     uint256 nextPaymentDue; // Timestamp of when the next payment is due
 
-    constructor(address _client, address _admin, address _addressProvider) {
+    constructor(address _client, address _addressProvider) {
         client = _client;
-        adminContract = _admin;
         smaAddressProvider = _addressProvider;
 
         timeCreated = block.timestamp;
@@ -49,13 +53,15 @@ contract SMA {
     */
     function transferFromClient(address _asset, uint256 _amount) external onlyClient {
         bool transferSuccess;
-        smaInterfaces.IERC20 token;
-        Structs.SMAStructs.OperableToken[] memory allowedTokens;
+        IERC20 token;
+        SMAStructs.OperableToken[] memory allowedTokens;
 
-        allowedTokens = smaInterfaces.ISMAManagerAdmin(adminContract).getAllowedTokens();
+        allowedTokens = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getAllowedTokens();
 
-        require(UtilsLib.SMAUtils.assetIsOperable(_asset, allowedTokens) == true, "Asset is not operable.");
-        token = smaInterfaces.IERC20(_asset);
+        require(SMAUtils.assetIsOperable(_asset, allowedTokens) == true, "Asset is not operable.");
+        token = IERC20(_asset);
 
         require(token.allowance(msg.sender, address(this)) >= _amount, "Allowance not enough. Please approve more tokens.");
 
@@ -72,13 +78,15 @@ contract SMA {
     function transferFromSMA(address _asset, uint256 _amount) external onlyAllowed {
         bool transferSuccess;
         bool approved;
-        smaInterfaces.IERC20 token;
-        Structs.SMAStructs.OperableToken[] memory allowedTokens;
+        IERC20 token;
+        SMAStructs.OperableToken[] memory allowedTokens;
 
-        allowedTokens = smaInterfaces.ISMAManagerAdmin(adminContract).getAllowedTokens();
+        allowedTokens = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getAllowedTokens();
 
-        require(UtilsLib.SMAUtils.assetIsOperable(_asset, allowedTokens) == true, "Asset is not operable.");
-        token = smaInterfaces.IERC20(_asset);
+        require(SMAUtils.assetIsOperable(_asset, allowedTokens) == true, "Asset is not operable.");
+        token = IERC20(_asset);
 
         approved = token.approve(address(this), _amount);
         require(approved, "Approval failed. Please try again.");
@@ -94,13 +102,15 @@ contract SMA {
     }
 
     function invest(address _asset, string memory _fromProto, string memory _toProto) external onlyAllowed {
-        smaInterfaces.IManagementLogic(
-            smaInterfaces.ISMAAddressProvider(smaAddressProvider).getManagementLogic()
+        IManagementLogic(
+            ISMAAddressProvider(smaAddressProvider).getManagementLogic()
             ).invest(_asset, _fromProto, _toProto);
     }
 
     function setActiveManagement(bool _active) external onlyClient {
-        activelyManaged = _active;
+        IManagementRegistry(
+            ISMAAddressProvider(smaAddressProvider).getManagementRegistry()
+        ).setIsActivelyManaged(address(this), _active);
     }
 
     /*
@@ -134,12 +144,15 @@ contract SMA {
     }
 
     modifier onlyAdmin{
-        require(msg.sender == adminContract, "Only admin can access this. You are not the admin.");
+        address walletAdmin = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getWalletAdmin();
+        require(msg.sender == walletAdmin, "Only admin can access this. You are not the admin.");
         _;
     }
 
     modifier onlyAllowed{
-        require(msg.sender == adminContract || msg.sender == client || msg.sender == manager,
+        require(msg.sender == client || msg.sender == manager,
         "Only ALLOWED users can access this. You are not an ALLOWED user."
         );
         _;

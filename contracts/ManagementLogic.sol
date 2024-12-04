@@ -99,4 +99,9 @@ contract ManagementLogic {
         require(msg.sender == admin, "Only Admin address can access");
         _;
     }
+
+    modifier onlySMA {
+        require(msg.sender == smaInterfaces.ISMAAddressProvider(smaAddressProvider).getSMAManager(), "Only client can access this. You are not the client.");
+        _;
+    }
 }

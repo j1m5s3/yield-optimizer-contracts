@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.27;
 
-import "../data_structs/SMAStructs.sol";
+import {SMAStructs} from "../data_structs/SMAStructs.sol";
 
 /**
  * @dev Interface of the ERC-20 standard as defined in the ERC.
@@ -93,12 +93,16 @@ interface ISMAManagerAdmin {
 
     function getPayToken() external view returns(address);
 
+    function getWalletAdmin() external view returns(address);
+
+    function getMaxAllowedSMAs() external view returns(uint256);
+
     //write
     function updateSMA(address _client, SMAStructs.SMA memory _sma) external;
 }
 
 interface ISMAOracle {
-    function getFee() external view returns (uint256);
+    function getETHFee() external view returns (uint256);
 
     function getBestRateProtocol(address _asset) external view returns (string memory);
 }
@@ -121,4 +125,14 @@ interface ISMAAddressProvider {
     function getManagementLogic() external view returns (address);
 
     function getManagementRegistry() external view returns (address);
+}
+
+interface IManagementRegistry {
+    function setIsActiveSMA(address _contract, bool _isSMA) external;
+
+    function setIsActivelyManaged(address _contract, bool _isActivelyManaged) external;
+
+    function getManagement(address _contract) external view returns (bytes32);
+
+    function getIsActiveSMA(address _contract) external view returns (bool);
 }

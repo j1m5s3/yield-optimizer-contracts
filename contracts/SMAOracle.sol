@@ -4,7 +4,7 @@ pragma solidity ^0.8.27;
 /*
 This contract will store the ETH denominated fee that clients will pay on creation of an SMA
 */
-
+import {ISMAAddressProvider, ISMAManagerAdmin} from "./interfaces/SMAInterfaces.sol";
 
 contract SMAOracle {
     address public admin;
@@ -16,7 +16,6 @@ contract SMAOracle {
     mapping(address => string) public tokenBestRateProtocol;
 
     constructor(address _smaAddressProvider) {
-        admin = msg.sender;
         smaAddressProvider = _smaAddressProvider;
     }
 
@@ -28,7 +27,7 @@ contract SMAOracle {
         tokenBestRateProtocol[_asset] = _protocolName;
     }
 
-    function getFee() external view returns (uint256) {
+    function getETHFee() external view returns (uint256) {
         return fee;
     }
 
@@ -38,7 +37,10 @@ contract SMAOracle {
     }
 
     modifier onlyAdmin {
-        require(msg.sender == admin, "Only Admin address can access");
+        address walletAdmin = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getWalletAdmin();
+        require(msg.sender == walletAdmin, "Only Admin address can access");
         _;
     }
 }

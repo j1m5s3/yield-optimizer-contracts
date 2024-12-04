@@ -130,6 +130,10 @@ dist
 .pnp.*
 
 # hardhat
-
 artifacts/
 cache/
+
+# env
+.env
+
+

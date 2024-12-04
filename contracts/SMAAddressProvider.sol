@@ -2,12 +2,13 @@
 
 pragma solidity ^0.8.27;
 
+import "./interfaces/SMAInterfaces.sol" as smaInterfaces;
+
 contract SMAAddressProvider {
     address public smaFactory;
     address public smaManagerAdmin;
     address public smaManager;
     address public smaOracle;
-    address public admin;
     address public managementLogic;
     address public managementRegistry;
 
@@ -27,8 +28,6 @@ contract SMAAddressProvider {
         smaOracle = _smaOracle;
         managementLogic = _managementLogic;
         managementRegistry = _managementRegistry;
-
-        admin = msg.sender;
     }
 
     function getSMAFactory() external view returns (address) {
@@ -88,7 +87,9 @@ contract SMAAddressProvider {
     }
 
     modifier onlyAdmin {
-        require(msg.sender == admin, "Only Admin address can access");
+        require(
+            msg.sender == smaInterfaces.ISMAManagerAdmin(smaManagerAdmin).getWalletAdmin(), 
+            "Only Admin address can access");
         _;
     }
 

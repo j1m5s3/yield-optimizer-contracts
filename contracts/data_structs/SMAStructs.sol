@@ -17,13 +17,8 @@ library SMAStructs {
 
     struct SMA {
         address client; // address of the client wallet
-        address manager; // address of the manager wallet
-        address admin; // address of admin contract
-        address payToken; // Token used to pay for the subscription
+        address sponsor; // address of the sponsor wallet
         address sma; // Address of the SMA contract
-
-        bool subscriptionPaid; // Boolean describing if the client has paid their subscription
         uint256 timeCreated; // Timestamp of when SMA was created
-        uint256 nextPaymentDue; // Timestamp of when the next payment is due
     }
 }

@@ -4,20 +4,16 @@ pragma solidity ^0.8.27;
 
 import "./SMA.sol"; // SMA contract
 import "./data_structs/SMAStructs.sol"; // Various structs for the SMA contract to operate
-import "./interfaces/SMAInterfaces.sol"; // Various interfaces for the SMA contract to operate
+import {ISMAManagerAdmin, ISMAAddressProvider} from "./interfaces/SMAInterfaces.sol"; // Various interfaces for the SMA contract to operate
 /*
 This contract will facilitate the deploy of new SMA contracts that the client and
 the bots that will manage the protfolio, will share.
 */
 
 contract SMAFactory {
-
-    address public portfolioManager;
-    address public adminContract;
     address public smaAddressProvider;
 
     uint256 public NUM_SMAS_DEPLOYED;
-    uint256 public MAX_ALLOWED_SMAS; // Max allowed SMAS to be deployed
 
     mapping(address => address) public USER_TO_SMA_MAPPING; // Mapping of user address to SMA address
 
@@ -28,9 +24,7 @@ contract SMAFactory {
         string message
     );
 
-    constructor(address _portfolioManager, address _adminContract, address _smaAddressProvider) {
-        portfolioManager = _portfolioManager;
-        adminContract = _adminContract;
+    constructor(address _smaAddressProvider) {
         smaAddressProvider = _smaAddressProvider;
 
         NUM_SMAS_DEPLOYED = 0;
@@ -46,29 +40,24 @@ contract SMAFactory {
     @return: None
     */
     function deploySMA (address _prospectiveClient) external payable {
+
+        ISMAManagerAdmin admin = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        );
+
         // Assert to ensure number of SMAs does not exceed the MAX_ALLOWED_SMAS
-        require(NUM_SMAS_DEPLOYED < MAX_ALLOWED_SMAS, "MAX_ALLOWED_SMAS have been deployed");
+        require(NUM_SMAS_DEPLOYED < admin.getMaxAllowedSMAs(), "MAX_ALLOWED_SMAS have been deployed");
 
         // Deploy SMA contract via this function
-        SMA smaContract = new SMA(_prospectiveClient, adminContract, smaAddressProvider);
+        SMA smaContract = new SMA(_prospectiveClient, smaAddressProvider);
         address contractAddress = address(smaContract);
-
-        ISMAManagerAdmin admin = ISMAManagerAdmin(adminContract);
-
-        address payToken = admin.getPayToken();
-        uint256 payPeriod = admin.getPayPeriod();
-        uint256 nextPaymentDue = block.timestamp + payPeriod * 1 days;
 
         SMAStructs.SMA memory newSma = SMAStructs.SMA(
         {
             client: _prospectiveClient,
-            manager: portfolioManager,
-            admin: adminContract,
-            payToken: payToken,
+            sponsor: msg.sender,
             sma: contractAddress,
-            subscriptionPaid: false,
-            timeCreated: block.timestamp,
-            nextPaymentDue: nextPaymentDue
+            timeCreated: block.timestamp
         });
 
         admin.updateSMA(_prospectiveClient, newSma);
@@ -81,63 +70,8 @@ contract SMAFactory {
             block.timestamp,
             "SMA created"
         );
-    }
 
-    /*
-    Function to set MAX_ALLOWED_SMAS to given amount
-
-    @param _maxAllowed: New value to be assigned to MAX_ALLOWED_SMAS
-
-    @return: None
-    */
-    function setMaxAllowedSMA(uint256 _maxAllowed) external onlyManager {
-        MAX_ALLOWED_SMAS = _maxAllowed;
-    }
-
-    /*
-    Set the manager admin address
-
-    @param _admin: Address of the manager admin
-
-    @return: None
-    */
-    function setAdmin(address _admin) external onlyManager {
-        adminContract = _admin;
-    }
-
-    // Reads
-
-    /*
-    Function to get the MAX_ALLOWED_SMAS
-
-    @param: None
-
-    @return: MAX_ALLOWED_SMAS
-    */
-    function getMaxAllowedSMA() external view returns (uint256) {
-        return MAX_ALLOWED_SMAS;
-    }
-
-    /*
-    Function to get the SMA contract address mapped to the given wallet address
-
-    @param _clientAddress: Wallet address of the client
-
-    @return: Address of the deployed SMA contract
-    */
-    function getClientSMAAddress(address _clientAddress) public view returns (address) {
-        address smaContractAddress = USER_TO_SMA_MAPPING[_clientAddress];
-        return smaContractAddress;
-    }
-
-    // Modifiers
-
-    /*
-    Modifier that prevents addresses that are != portfolioManager from accessing
-    */
-    modifier onlyManager {
-        require(msg.sender == portfolioManager, "Only PM can access this. You are not the PM.");
-        _;
+        NUM_SMAS_DEPLOYED++;
     }
 
 }
