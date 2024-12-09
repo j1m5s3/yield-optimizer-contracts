@@ -2,24 +2,29 @@
 
 pragma solidity ^0.8.27;
 
-import "./data_structs/SMAStructs.sol" as Structs;
+import {SMAStructs} from "./data_structs/SMAStructs.sol";
 /*
 Admin contract that will control the subscription fees individually and
 */
 contract SMAManagerAdmin {
     address public admin;
     address public factoryAddress; // Address of the factory contract
-    address allowedPayToken; // Allowed token for payment of subscription fees
+    address public allowedPayToken; // Allowed token for payment of subscription fees
 
     uint256 public payPeriod; // Pay period for the subscription
     uint256 public subscriptionFee; // Subscription fee for the client
 
     uint256 public MAX_ALLOWED_SMAS;
 
-    Structs.SMAStructs.OperableToken[] public allowedTokens; // Allowed base tokens that that user desires yield for
-    Structs.SMAStructs.InterestTokens[] public allowedInterestTokens; // Allowed interest tokens
+    uint256 public smaFeeUSD; // Fee in USD for the creation of an SMA
 
-    mapping(address => Structs.SMAStructs.SMA) public SMAs; // Mapping of client address to their SMA
+    SMAStructs.OperableToken[] public allowedBaseTokens; // Allowed base tokens that that user desires yield for
+    mapping(address => bool) public isAllowedToken; // Mapping of allowed tokens
+
+    SMAStructs.InterestTokens[] public allowedInterestTokens; // Allowed interest tokens
+    mapping(address => bool) public isAllowedInterestToken; // Mapping of allowed interest tokens
+
+    mapping(address => SMAStructs.SMA) public SMAs; // Mapping of client address to their SMA
     mapping(string => address) public PROTOCOL_POOL_CONTRACTS; // Mapping of protocol to pool contract
 
     constructor(
@@ -27,7 +32,8 @@ contract SMAManagerAdmin {
         address _allowedPayToken,
         uint256 _payPeriod,
         uint256 _subscriptionFee,
-        uint256 _maxAllowedSMAS
+        uint256 _maxAllowedSMAS,
+        uint256 _smaFeeUSD
     ){
         admin = _admin;
         allowedPayToken = _allowedPayToken;
@@ -35,15 +41,24 @@ contract SMAManagerAdmin {
         subscriptionFee = _subscriptionFee;
 
         MAX_ALLOWED_SMAS = _maxAllowedSMAS;
+        smaFeeUSD = _smaFeeUSD;
     }
 
     // Writes
     function addAllowedToken(address _tokenAddress, string memory _tokenSymbol) external onlyAdmin{
-        allowedTokens.push(Structs.SMAStructs.OperableToken(_tokenAddress, _tokenSymbol));
+        allowedBaseTokens.push(SMAStructs.OperableToken(_tokenAddress, _tokenSymbol));
     }
 
-    function addAllowedInterestToken(address _tokenAddress, string memory _tokenSymbol, string memory _protocol) external onlyAdmin{
-        allowedInterestTokens.push(Structs.SMAStructs.InterestTokens(_tokenAddress, _tokenSymbol, _protocol));
+    function setIsAllowedToken(address _tokenAddress, bool _isAllowed) external onlyAdmin{
+        isAllowedToken[_tokenAddress] = _isAllowed;
+    }
+
+    function addAllowedInterestToken(address _tokenAddress, string memory _tokenSymbol, string memory _protocol, address _baseToken) external onlyAdmin{
+        allowedInterestTokens.push(SMAStructs.InterestTokens(_tokenAddress, _tokenSymbol, _protocol, _baseToken));
+    }
+
+    function setIsAllowedInterestToken(address _tokenAddress, bool _isAllowed) external onlyAdmin{
+        isAllowedInterestToken[_tokenAddress] = _isAllowed;
     }
 
     function setPayPeriod(uint256 _payPeriod) external onlyAdmin{
@@ -58,7 +73,7 @@ contract SMAManagerAdmin {
         admin = _admin;
     }
 
-    function addSMA(address _client, Structs.SMAStructs.SMA memory _sma) external onlyAdminOrFactory{
+    function addSMA(address _client, SMAStructs.SMA memory _sma) external onlyAdminOrFactory{
         SMAs[_client] = _sma;
     }
 
@@ -70,6 +85,10 @@ contract SMAManagerAdmin {
         MAX_ALLOWED_SMAS = _maxAllowed;
     }
 
+    function setSMAFeeUSD(uint256 _smaFeeUSD) external onlyAdmin{
+        smaFeeUSD = _smaFeeUSD;
+    }
+
     function addProtocolPoolContractAddress(string memory _protocol, address _poolContract) external onlyAdmin{
         PROTOCOL_POOL_CONTRACTS[_protocol] = _poolContract;
     }
@@ -79,12 +98,20 @@ contract SMAManagerAdmin {
         return MAX_ALLOWED_SMAS;
     }
 
-    function getAllowedTokens() external view returns(Structs.SMAStructs.OperableToken[] memory){
-        return allowedTokens;
+    function getallowedBaseTokens() external view returns(SMAStructs.OperableToken[] memory){
+        return allowedBaseTokens;
     }
 
-    function getAllowedInterestTokens() external view returns(Structs.SMAStructs.InterestTokens[] memory){
+    function getIsAllowedToken(address _token) external view returns(bool){
+        return isAllowedToken[_token];
+    }
+
+    function getAllowedInterestTokens() external view returns(SMAStructs.InterestTokens[] memory){
         return allowedInterestTokens;
+    }
+
+    function getIsAllowedInterestToken(address _token) external view returns(bool){
+        return isAllowedInterestToken[_token];
     }
 
     function getSubscriptionFee() external view returns(uint256){
@@ -103,7 +130,7 @@ contract SMAManagerAdmin {
         return factoryAddress;
     }
 
-    function getSMA(address _client) external view returns(Structs.SMAStructs.SMA memory){
+    function getSMA(address _client) external view returns(SMAStructs.SMA memory){
         return SMAs[_client];
     }
 
@@ -113,6 +140,10 @@ contract SMAManagerAdmin {
 
     function getWalletAdmin() external view returns(address){
         return admin;
+    }
+
+    function getSMAFeeUSD() external view returns(uint256){
+        return smaFeeUSD;
     }
 
     // Modifiers

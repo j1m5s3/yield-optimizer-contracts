@@ -60,7 +60,18 @@ contract SMA {
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
         ).getAllowedTokens();
 
-        require(SMAUtils.assetIsOperable(_asset, allowedTokens) == true, "Asset is not operable.");
+        bool isAllowedToken = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getIsAllowedToken(_asset);
+
+        bool isAllowedInterestToken = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getIsAllowedInterestToken(_asset);
+
+        bool isOperable = isAllowedToken || isAllowedInterestToken;
+
+        require(isOperable, "Asset is not operable.");
+
         token = IERC20(_asset);
 
         require(token.allowance(msg.sender, address(this)) >= _amount, "Allowance not enough. Please approve more tokens.");
@@ -75,36 +86,33 @@ contract SMA {
     @param _asset: Address of the asset to transfer
     @param _amount: Amount of the asset to transfer
     */
-    function transferFromSMA(address _asset, uint256 _amount) external onlyAllowed {
+    function transferFromSMA(address _asset, uint256 _amount) external onlyClient {
         bool transferSuccess;
         bool approved;
         IERC20 token;
-        SMAStructs.OperableToken[] memory allowedTokens;
 
-        allowedTokens = ISMAManagerAdmin(
-            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
-        ).getAllowedTokens();
-
-        require(SMAUtils.assetIsOperable(_asset, allowedTokens) == true, "Asset is not operable.");
         token = IERC20(_asset);
 
         approved = token.approve(address(this), _amount);
         require(approved, "Approval failed. Please try again.");
 
-        address caller = msg.sender;
-        if (caller == client) {
-            transferSuccess = token.transfer(client, _amount);
-        } else if (caller == manager) {
-            transferSuccess = token.transfer(manager, _amount);
-        }
+
+        transferSuccess = token.transfer(client, _amount);
 
         require(transferSuccess, "Transfer failed. Please try again.");
     }
 
-    function invest(address _asset, string memory _fromProto, string memory _toProto) external onlyAllowed {
+    function invest(address _asset, string memory _fromProto, string memory _toProto) external onlyAllowed {        
+        address mangementLogicAddress = ISMAAddressProvider(smaAddressProvider).getManagementLogic();
+        uint256 currAssetBalanace = IERC20(_asset).balanceOf(address(this));
+
+        require(currAssetBalanace > 0, "No assets to invest.");
+
+        IERC20(_asset).approve(mangementLogicAddress, currAssetBalanace);
         IManagementLogic(
-            ISMAAddressProvider(smaAddressProvider).getManagementLogic()
-            ).invest(_asset, _fromProto, _toProto);
+            mangementLogicAddress
+        ).invest(_asset, currAssetBalanace, _fromProto, _toProto);
+        IERC20(_asset).approve(mangementLogicAddress, 0);
     }
 
     function setActiveManagement(bool _active) external onlyClient {

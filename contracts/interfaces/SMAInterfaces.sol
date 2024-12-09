@@ -85,7 +85,11 @@ interface ISMAManagerAdmin {
     //read
     function getAllowedTokens() external view returns (SMAStructs.OperableToken[] memory);
 
+    function getIsAllowedToken(address _token) external view returns(bool);
+
     function getAllowedInterestTokens() external view returns (SMAStructs.InterestTokens[] memory);
+
+    function getIsAllowedInterestToken(address _token) external view returns(bool);
 
     function getSubscriptionFee() external view returns (uint256);
 
@@ -108,7 +112,7 @@ interface ISMAOracle {
 }
 
 interface IManagementLogic {
-    function invest(address _asset, string memory _fromProto, string memory _toProto) external;
+    function invest(address _asset, uint256 _amount, string memory _fromProto, string memory _toProto) external;
 }
 
 interface ISMAAddressProvider {

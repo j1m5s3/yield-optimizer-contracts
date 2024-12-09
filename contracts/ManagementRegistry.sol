@@ -12,6 +12,12 @@ contract ManagementRegistry {
     mapping(address => bool) public isActivelyManaged;
     mapping(address => bytes32) public managementRegistry;
 
+    event ManagementStatusChanged(
+        address indexed _contract, 
+        bool _isActiveSMA, 
+        bool _isActivelyManaged
+    );
+
     constructor(address _addressProvider) {
         smaAddressProvider = _addressProvider;
     }

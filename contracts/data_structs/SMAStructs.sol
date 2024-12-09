@@ -13,6 +13,7 @@ library SMAStructs {
         address tokenAddress;
         string tokenSymbol;
         string protocol;
+        address baseToken;
     }
 
     struct SMA {

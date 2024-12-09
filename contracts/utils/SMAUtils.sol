@@ -14,4 +14,22 @@ library SMAUtils {
         }
         return false;
     }
+
+    function assetIsInterestToken(address _asset, SMAStructs.InterestTokens[] memory _interestTokens) internal pure returns(bool){
+        for(uint i = 0; i < _interestTokens.length; i++){
+            if(_asset == _interestTokens[i].tokenAddress){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function getInterestTokenBase(address _asset, SMAStructs.InterestTokens[] memory _interestTokens) internal pure returns(address){
+        for(uint i = 0; i < _interestTokens.length; i++){
+            if(_asset == _interestTokens[i].tokenAddress){
+                return _interestTokens[i].baseToken;
+            }
+        }
+        return address(0);
+    }
 }
