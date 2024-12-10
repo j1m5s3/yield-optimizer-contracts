@@ -29,12 +29,11 @@ contract ManagementLogic {
 
     function invest(address _asset, uint256 _amount, string memory _fromProto, string memory _toProto) external onlySMA {
         address tokenToInvest;
-        address fromProtoAddress = ISMAAddressProvider(smaAddressProvider).getProtocolAddress(_fromProto);
-        address toProtoAddress = ISMAAddressProvider(smaAddressProvider).getProtocolAddress(_toProto);
 
-        require(fromProtoAddress != address(0), "Protocol not found");
-        require(toProtoAddress != address(0), "Protocol not found");
-        require(fromProtoAddress != toProtoAddress, "Cannot invest in the same protocol");
+        require(
+            keccak256(abi.encodePacked(_fromProto)) != keccak256(abi.encodePacked(_toProto)), 
+            "Cannot invest in the same protocol"
+        );
 
         bool isAllowedBaseToken = ISMAManagerAdmin(
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
@@ -52,7 +51,10 @@ contract ManagementLogic {
         tokenToInvest = _determineTxnToken(_asset);
         
         // Withdraw from the fromProto
-        _withdraw(tokenToInvest, _amount, _fromProto);
+        if (isAllowedInterestToken) {
+            _withdraw(tokenToInvest, _amount, _fromProto);
+        }
+        
 
         // Deposit to the toProto
         _deposit(tokenToInvest, _amount, _toProto);
@@ -95,12 +97,16 @@ contract ManagementLogic {
 
         // Deposit to the toProto
         if(keccak256(abi.encodePacked(_toProto)) == keccak256(abi.encodePacked("AAVE"))) {
-            IAAVEPool(toProtoAddress).supply(_asset, _amount, address(this), 0);
+            IAAVEPool(toProtoAddress).supply(_asset, _amount, msg.sender, 0);
         } else if(keccak256(abi.encodePacked(_toProto)) == keccak256(abi.encodePacked("COMPOUND"))) {
-            ICompoundPool(toProtoAddress).supply(_asset, _amount);
+            ICompoundPool(toProtoAddress).supplyTo(msg.sender, _asset, _amount);
         } else {
             revert("Protocol not found");
         }
+    }
+
+    function transferFromContract(address _asset, address _to, uint256 _amount) external onlyAdmin {
+        IERC20(_asset).transfer(_to, _amount);
     }
 
     modifier onlyAdmin {
