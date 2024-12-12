@@ -1,8 +1,10 @@
 {
-    "SMAModule": {
+    "ManagerAdminModule": {
         "managerAdmin-admin": "addr",
         "managerAdmin-payToken": "addr",
         "managerAdmin-payPeriod": "uint256",
-        "managerAdmin-subFee": "uint256"
+        "managerAdmin-subFee": "uint256",
+        "amangerAdmin-maxAllowedSMAs": "uint256",
+        "managerAdmin-smaFeeUSD": "uint256"
     }
 }

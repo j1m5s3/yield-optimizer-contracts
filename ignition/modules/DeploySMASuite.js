@@ -3,14 +3,35 @@
 
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
 
-const JAN_1ST_2030 = 1893456000;
-const ONE_GWEI = 1_000_000_000n;
+const ManagerAdminModule = buildModule("ManagerAdminModule", (m) => {
+  const admin = m.getParameter("managerAdmin-admin");
+  const payToken = m.getParameter("managerAdmin-payToken");
+  const payPeriod = m.getParameter("managerAdmin-payPeriod");
+  const subscriptionFee = m.getParameter("managerAdmin-subFee");
+  const maxAllowedSMAs = m.getParameter("amangerAdmin-maxAllowedSMAs");
+  const smaFeeUSD = m.getParameter("managerAdmin-smaFeeUSD");
+  const managerAdminParams = [admin, payToken, payPeriod, subscriptionFee, maxAllowedSMAs, smaFeeUSD];
 
-module.exports = buildModule("SMAModule", (m) => {
-  const unlockTime = m.getParameter("unlockTime", JAN_1ST_2030);
-  const lockedAmount = m.getParameter("lockedAmount", ONE_GWEI);
+  const managerAdmin = m.contract("SMAManagerAdmin", managerAdminParams);
 
-  const lock = m.contract("SMAManagerAdmin", [unlockTime]);
+  return { managerAdmin };
+});
 
-  return { lock };
+const SMAAddressProviderModule = buildModule("SMAAddressProviderModule", (m) => {
+  const { managerAdmin } = m.useModule(ManagerAdminModule);
+
+  const addressProvider = m.contract("SMAAddressProvider", [managerAdmin]);
+
+  return { addressProvider };
+});
+
+const SMASuiteModule = buildModule("SMASuiteModule", (m) => {
+  const { addressProvider } = m.useModule(SMAAddressProviderModule);
+
+  const managementRegistry = m.contract("ManagementRegistry", [addressProvider]);
+  const managementLogic = m.contract("ManagementLogic", [addressProvider]);
+  const smaFactory = m.contract("SMAFactory", [addressProvider]);
+  const smaOracle = m.contract("SMAOracle", [addressProvider]);
+
+  return { managementRegistry, managementLogic, smaFactory, smaOracle };
 });

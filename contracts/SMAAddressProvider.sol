@@ -14,20 +14,8 @@ contract SMAAddressProvider {
 
     mapping (string => address) PROTOCOL_ADDRESSES;
 
-    constructor(
-        address _smaFactory, 
-        address _smaManagerAdmin, 
-        address _smaManager, 
-        address _smaOracle,
-        address _managementLogic,
-        address _managementRegistry
-    ) {
-        smaFactory = _smaFactory;
+    constructor(address _smaManagerAdmin) {
         smaManagerAdmin = _smaManagerAdmin;
-        smaManager = _smaManager;
-        smaOracle = _smaOracle;
-        managementLogic = _managementLogic;
-        managementRegistry = _managementRegistry;
     }
 
     function getSMAFactory() external view returns (address) {
