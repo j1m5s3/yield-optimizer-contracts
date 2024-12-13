@@ -132,6 +132,7 @@ dist
 # hardhat
 artifacts/
 cache/
+deployments/
 
 # env
 .env

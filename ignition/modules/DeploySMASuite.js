@@ -16,6 +16,7 @@ const ManagerAdminModule = buildModule("ManagerAdminModule", (m) => {
 
   return { managerAdmin };
 });
+module.exports = ManagerAdminModule;
 
 const SMAAddressProviderModule = buildModule("SMAAddressProviderModule", (m) => {
   const { managerAdmin } = m.useModule(ManagerAdminModule);
@@ -24,6 +25,7 @@ const SMAAddressProviderModule = buildModule("SMAAddressProviderModule", (m) => 
 
   return { addressProvider };
 });
+module.exports = SMAAddressProviderModule;
 
 const SMASuiteModule = buildModule("SMASuiteModule", (m) => {
   const { addressProvider } = m.useModule(SMAAddressProviderModule);
@@ -35,3 +37,4 @@ const SMASuiteModule = buildModule("SMASuiteModule", (m) => {
 
   return { managementRegistry, managementLogic, smaFactory, smaOracle };
 });
+module.exports = SMASuiteModule;

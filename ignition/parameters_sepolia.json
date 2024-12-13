@@ -1,0 +1,10 @@
+{
+    "ManagerAdminModule": {
+        "managerAdmin-admin": "0xE36A6b5C387935808BA9DE319B4d75d155B1e605",
+        "managerAdmin-payToken": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+        "managerAdmin-payPeriod": 30,
+        "managerAdmin-subFee": 5,
+        "amangerAdmin-maxAllowedSMAs": 5,
+        "managerAdmin-smaFeeUSD": 1
+    }
+}
