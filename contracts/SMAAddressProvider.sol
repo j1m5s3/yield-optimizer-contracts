@@ -50,6 +50,10 @@ contract SMAAddressProvider {
         PROTOCOL_ADDRESSES[_protocolName] = _protocolAddress;
     }
 
+    function removeProtocolAddress(string memory _protocolName) external onlyAdmin{
+        delete PROTOCOL_ADDRESSES[_protocolName];
+    }
+
     function setSMAFactory(address _smaFactory) external onlyAdmin{
         smaFactory = _smaFactory;
     }

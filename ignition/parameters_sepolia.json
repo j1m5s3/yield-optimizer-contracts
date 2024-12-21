@@ -5,6 +5,19 @@
         "managerAdmin-payPeriod": 30,
         "managerAdmin-subFee": 5,
         "amangerAdmin-maxAllowedSMAs": 5,
-        "managerAdmin-smaFeeUSD": 1
+        "managerAdmin-smaFeeUSD": 1,
+        "managerAdmin-allowedTokens": [
+            {"tokenAddress": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8", "tokenSymbol": "USDC"}
+        ],
+        "managerAdmin-allowedInterestTokens": [
+            {"tokenAddress": "0x16dA4541aD1807f4443d92D26044C1147406EB80", "tokenSymbol": "aUSDC", "protocol": "AAVE"},
+            {"tokenAddress": "0xAec1F48e02Cfb822Be958B68C7957156EB3F0b6e", "tokenSymbol": "cUSDC", "protocol": "COMPOUND"}
+        ]
+    },
+    "SMAAddressProviderModule": {
+        "addressProvider-protocols": [
+            {"protocolName": "AAVE", "poolAddress": "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951"},
+            {"protocolName": "COMPOUND", "poolAddress": "0xAec1F48e02Cfb822Be958B68C7957156EB3F0b6e"}
+        ]
     }
 }
