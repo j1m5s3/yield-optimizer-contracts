@@ -14,21 +14,23 @@ const ManagerAdminModule = buildModule("ManagerAdminModule", (m) => {
 
   const managerAdmin = m.contract("SMAManagerAdmin", managerAdminParams);
 
-  const allowedTokens = m.getParameter("managerAdmin-allowedTokens");
-  for (const token of allowedTokens) {
-    let tokenAddress = token['tokensAddress'];
-    let tokenSymbol = token['tokenSymbol'];
-    m.call(managerAdmin, "addAllowedToken", [tokenAddress, tokenSymbol]);
-    m.call(managerAdmin, "setIsAllowedToken", [tokenAddress, true]);
+  const allowedTokensStr = JSON.stringify(m.getParameter("managerAdmin-allowedTokens"));
+  const allowedTokens = JSON.parse(allowedTokensStr);
+  for (var i = 0; i < allowedTokens.length; i++) {
+    let tokenAddress = allowedTokens[i]['tokensAddress'];
+    let tokenSymbol = allowedTokens[i]['tokenSymbol'];
+    m.call(managerAdmin, "addAllowedToken", [tokenAddress, tokenSymbol], {id: "addAllowedTokenCall"});
+    m.call(managerAdmin, "setIsAllowedToken", [tokenAddress, true]), {id: "setIsAllowedTokenCall"};
   }
 
-  const allowedInterestTokens = m.getParameter("managerAdmin-allowedInterestTokens");
-  for (const token of allowedInterestTokens) {
-    let tokenAddress = token['tokensAddress'];
-    let tokenSymbol = token['tokenSymbol'];
+  const allowedInterestTokensStr = JSON.stringify(m.getParameter("managerAdmin-allowedInterestTokens"));
+  const allowedInterestTokens = JSON.parse(allowedInterestTokensStr);
+  for (var i = 0; i < allowedInterestTokens.length; i++) {
+    let tokenAddress = allowedInterestTokens[i]['tokensAddress'];
+    let tokenSymbol = allowedInterestTokens[i]['tokenSymbol'];
     let protocol = token['protocol'];
-    m.call(managerAdmin, "addAllowedInterestToken", [tokenAddress, tokenSymbol, protocol]);
-    m.call(managerAdmin, "setIsAllowedInterestToken", [tokenAddress, true]);
+    m.call(managerAdmin, "addAllowedInterestToken", [tokenAddress, tokenSymbol, protocol], {id: "addAllowedInterestTokenCall"});
+    m.call(managerAdmin, "setIsAllowedInterestToken", [tokenAddress, true], {id: "setIsAllowedInterestTokenCall"});
   }
 
   return { managerAdmin };
@@ -40,11 +42,12 @@ const SMAAddressProviderModule = buildModule("SMAAddressProviderModule", (m) => 
 
   const addressProvider = m.contract("SMAAddressProvider", [managerAdmin]);
 
-  const protocolAdresses = m.getParameter("addressProvider-protocols")
-  for (const protocol of protocolAdresses) {
-    let protocolName = protocol['protocolName'];
-    let protocolPoolAddress = protocol['poolAdress'];
-    m.call(addressProvider, "setProtocol", [protocolName, protocolPoolAddress]);
+  const protocolAdressesStr = JSON.stringify(m.getParameter("addressProvider-protocols"));
+  const protocolAdresses = JSON.parse(protocolAdressesStr);
+  for (var i = 0; i < protocolAdresses.length; i++) {
+    let protocolName = protocolAdresses[i]['protocolName'];
+    let protocolPoolAddress = protocolAdresses[i]['poolAdress'];
+    m.call(addressProvider, "setProtocol", [protocolName, protocolPoolAddress], {id: "setProtocolCall"});
   }
 
   return { addressProvider };
