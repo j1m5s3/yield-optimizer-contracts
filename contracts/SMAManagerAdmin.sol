@@ -93,7 +93,7 @@ contract SMAManagerAdmin {
         return MAX_ALLOWED_SMAS;
     }
 
-    function getallowedBaseTokens() external view returns(SMAStructs.OperableToken[] memory){
+    function getAllowedBaseTokens() external view returns(SMAStructs.OperableToken[] memory){
         return allowedBaseTokens;
     }
 

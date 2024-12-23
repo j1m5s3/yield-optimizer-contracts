@@ -1,1 +1,1 @@
- npx hardhat ignition deploy .\ignition\modules\DeploySMASuite.js --network sepolia --parameters .\ignition\parameters_sepolia.json
+npx hardhat ignition deploy .\ignition\modules\DeploySMASuite.js --network sepolia --parameters .\ignition\parameters_sepolia.json

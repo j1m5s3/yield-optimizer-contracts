@@ -10,28 +10,32 @@ const ManagerAdminModule = buildModule("ManagerAdminModule", (m) => {
   const subscriptionFee = m.getParameter("managerAdmin-subFee");
   const maxAllowedSMAs = m.getParameter("amangerAdmin-maxAllowedSMAs");
   const smaFeeUSD = m.getParameter("managerAdmin-smaFeeUSD");
+
   const managerAdminParams = [admin, payToken, payPeriod, subscriptionFee, maxAllowedSMAs, smaFeeUSD];
+
+  const usdcAddress = m.getParameter("USDC");
+  const usdcSymbol = m.getParameter("USDC_SYMBOL");
+  const aUSDCAddress = m.getParameter("aUSDC");
+  const aUSDCSymbol = m.getParameter("aUSDC_SYMBOL");
+  const cUSDCAddress = m.getParameter("cUSDC");
+  const cUSDCSymbol = m.getParameter("cUSDC_SYMBOL");
+  const aUSDCProtocol = m.getParameter("aUSDC_PROTOCOL");
+  const cUSDCProtocol = m.getParameter("cUSDC_PROTOCOL");
+
+  const allowUSDCParams = [usdcAddress, usdcSymbol];
+  const allowAUSDCParams = [aUSDCAddress, aUSDCSymbol, aUSDCProtocol, usdcAddress];
+  const allowCUSDCParams = [cUSDCAddress, cUSDCSymbol, cUSDCProtocol, usdcAddress];
 
   const managerAdmin = m.contract("SMAManagerAdmin", managerAdminParams);
 
-  const allowedTokensStr = JSON.stringify(m.getParameter("managerAdmin-allowedTokens"));
-  const allowedTokens = JSON.parse(allowedTokensStr);
-  for (var i = 0; i < allowedTokens.length; i++) {
-    let tokenAddress = allowedTokens[i]['tokensAddress'];
-    let tokenSymbol = allowedTokens[i]['tokenSymbol'];
-    m.call(managerAdmin, "addAllowedToken", [tokenAddress, tokenSymbol], {id: "addAllowedTokenCall"});
-    m.call(managerAdmin, "setIsAllowedToken", [tokenAddress, true]), {id: "setIsAllowedTokenCall"};
-  }
+  m.call(managerAdmin, "addAllowedToken", allowUSDCParams);
+  m.call(managerAdmin, "setIsAllowedToken", [usdcAddress, true]);
 
-  const allowedInterestTokensStr = JSON.stringify(m.getParameter("managerAdmin-allowedInterestTokens"));
-  const allowedInterestTokens = JSON.parse(allowedInterestTokensStr);
-  for (var i = 0; i < allowedInterestTokens.length; i++) {
-    let tokenAddress = allowedInterestTokens[i]['tokensAddress'];
-    let tokenSymbol = allowedInterestTokens[i]['tokenSymbol'];
-    let protocol = token['protocol'];
-    m.call(managerAdmin, "addAllowedInterestToken", [tokenAddress, tokenSymbol, protocol], {id: "addAllowedInterestTokenCall"});
-    m.call(managerAdmin, "setIsAllowedInterestToken", [tokenAddress, true], {id: "setIsAllowedInterestTokenCall"});
-  }
+  m.call(managerAdmin, "addAllowedInterestToken", allowAUSDCParams, {id: "addAllowedInterestTokenaUSDC"});
+  m.call(managerAdmin, "setIsAllowedInterestToken", [aUSDCAddress, true], {id: "setIsAllowedInterestTokenaUSDC"});
+
+  m.call(managerAdmin, "addAllowedInterestToken", allowCUSDCParams, {id: "addAllowedInterestTokencUSDC"});
+  m.call(managerAdmin, "setIsAllowedInterestToken", [cUSDCAddress, true], {id: "setIsAllowedInterestTokencUSDC"});
 
   return { managerAdmin };
 });
@@ -39,16 +43,15 @@ module.exports = ManagerAdminModule;
 
 const SMAAddressProviderModule = buildModule("SMAAddressProviderModule", (m) => {
   const { managerAdmin } = m.useModule(ManagerAdminModule);
+  const aaveName = m.getParameter("AAVE_PROTOCOL");
+  const compoundName = m.getParameter("COMPOUND_PROTOCOL");
+  const aavePoolAddress = m.getParameter("AAVE_POOL");
+  const compoundPoolAddress = m.getParameter("COMPOUND_POOL");
 
   const addressProvider = m.contract("SMAAddressProvider", [managerAdmin]);
 
-  const protocolAdressesStr = JSON.stringify(m.getParameter("addressProvider-protocols"));
-  const protocolAdresses = JSON.parse(protocolAdressesStr);
-  for (var i = 0; i < protocolAdresses.length; i++) {
-    let protocolName = protocolAdresses[i]['protocolName'];
-    let protocolPoolAddress = protocolAdresses[i]['poolAdress'];
-    m.call(addressProvider, "setProtocol", [protocolName, protocolPoolAddress], {id: "setProtocolCall"});
-  }
+  m.call(addressProvider, "setProtocolAddress", [aaveName, aavePoolAddress], {id: "setProtocolAAVE"});
+  m.call(addressProvider, "setProtocolAddress", [compoundName, compoundPoolAddress], {id: "setProtocolCOMPOUND"});
 
   return { addressProvider };
 });
