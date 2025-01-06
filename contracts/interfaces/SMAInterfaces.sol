@@ -102,7 +102,7 @@ interface ISMAManagerAdmin {
     function getMaxAllowedSMAs() external view returns(uint256);
 
     //write
-    function updateSMA(address _client, SMAStructs.SMA memory _sma) external;
+    function addSMA(address _client, SMAStructs.SMA memory _sma) external;
 }
 
 interface ISMAOracle {

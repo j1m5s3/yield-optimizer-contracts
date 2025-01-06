@@ -59,16 +59,21 @@ module.exports = SMAAddressProviderModule;
 
 const SMASuiteModule = buildModule("SMASuiteModule", (m) => {
   const { addressProvider } = m.useModule(SMAAddressProviderModule);
+  const { managerAdmin } = m.useModule(ManagerAdminModule);
+
+  const keeperAddress = m.getParameter("oracleKeeper");
 
   const managementRegistry = m.contract("ManagementRegistry", [addressProvider]);
   const managementLogic = m.contract("ManagementLogic", [addressProvider]);
   const smaFactory = m.contract("SMAFactory", [addressProvider]);
-  const smaOracle = m.contract("SMAOracle", [addressProvider]);
+  const smaOracle = m.contract("SMAOracle", [addressProvider, keeperAddress]);
 
   m.call(addressProvider, "setManagementRegistry", [managementRegistry]);
   m.call(addressProvider, "setManagementLogic", [managementLogic]);
   m.call(addressProvider, "setSMAFactory", [smaFactory]);
   m.call(addressProvider, "setOracle", [smaOracle]);
+
+  m.call(managerAdmin, "setFactoryAddress", [smaFactory]);
 
   return { managementRegistry, managementLogic, smaFactory, smaOracle };
 });

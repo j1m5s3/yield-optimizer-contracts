@@ -7,7 +7,7 @@ This contract will store the ETH denominated fee that clients will pay on creati
 import {ISMAAddressProvider, ISMAManagerAdmin} from "./interfaces/SMAInterfaces.sol";
 
 contract SMAOracle {
-    address public admin;
+    address public keeper;
     address public smaAddressProvider;
 
     uint256 public fee;
@@ -15,16 +15,25 @@ contract SMAOracle {
 
     mapping(address => string) public tokenBestRateProtocol;
 
-    constructor(address _smaAddressProvider) {
+    constructor(address _smaAddressProvider, address _keeper) {
         smaAddressProvider = _smaAddressProvider;
+        keeper = _keeper;
     }
 
-    function setETHFee(uint256 _fee) external onlyAdmin{
+    function setKeeper(address _keeper) external onlyAdmin {
+        keeper = _keeper;
+    }
+
+    function setETHFee(uint256 _fee) external onlyKeeper{
         fee = _fee;
     }
 
-    function setBestRateProtocol(address _asset, string memory _protocolName) external onlyAdmin{
+    function setBestRateProtocol(address _asset, string memory _protocolName) external onlyKeeper{
         tokenBestRateProtocol[_asset] = _protocolName;
+    }
+
+    function getKeeper() external view returns (address) {
+        return keeper;
     }
 
     function getETHFee() external view returns (uint256) {
@@ -41,6 +50,11 @@ contract SMAOracle {
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
         ).getWalletAdmin();
         require(msg.sender == walletAdmin, "Only Admin address can access");
+        _;
+    }
+
+    modifier onlyKeeper {
+        require(msg.sender == keeper, "Only Keeper address can access");
         _;
     }
 }

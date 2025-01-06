@@ -60,7 +60,7 @@ contract SMAFactory {
             timeCreated: block.timestamp
         });
 
-        admin.updateSMA(_prospectiveClient, newSma);
+        admin.addSMA(_prospectiveClient, newSma);
 
         USER_TO_SMA_MAPPING[_prospectiveClient] = contractAddress;
 
