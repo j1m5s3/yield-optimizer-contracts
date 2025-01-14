@@ -4,7 +4,7 @@ pragma solidity ^0.8.27;
 
 import "./SMA.sol"; // SMA contract
 import "./data_structs/SMAStructs.sol"; // Various structs for the SMA contract to operate
-import {ISMAManagerAdmin, ISMAAddressProvider} from "./interfaces/SMAInterfaces.sol"; // Various interfaces for the SMA contract to operate
+import {ISMAManagerAdmin, ISMAAddressProvider, ISMAOracle} from "./interfaces/SMAInterfaces.sol"; // Various interfaces for the SMA contract to operate
 /*
 This contract will facilitate the deploy of new SMA contracts that the client and
 the bots that will manage the protfolio, will share.
@@ -40,6 +40,12 @@ contract SMAFactory {
     @return: None
     */
     function deploySMA (address _prospectiveClient) external payable {
+
+        uint256 smaFee = ISMAOracle(
+            ISMAAddressProvider(smaAddressProvider).getOracle()
+        ).getETHFee();
+
+        require(msg.value == smaFee, "Incorrect fee amount");
 
         ISMAManagerAdmin admin = ISMAManagerAdmin(
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
