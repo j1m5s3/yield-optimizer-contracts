@@ -22,4 +22,10 @@ library SMAStructs {
         address sma; // Address of the SMA contract
         uint256 timeCreated; // Timestamp of when SMA was created
     }
+
+    struct Asset {
+        address tokenAddress; // Address of the token
+        string tokenSymbol; // Symbol of the token
+        uint256 tokenBalance; // Balance of the token
+    }
 }

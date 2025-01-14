@@ -83,7 +83,7 @@ interface IERC20 {
 interface ISMAManagerAdmin {
 
     //read
-    function getAllowedTokens() external view returns (SMAStructs.OperableToken[] memory);
+    function getAllowedBaseTokens() external view returns (SMAStructs.OperableToken[] memory);
 
     function getIsAllowedToken(address _token) external view returns(bool);
 

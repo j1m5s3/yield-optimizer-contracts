@@ -58,7 +58,7 @@ contract SMA {
 
         allowedTokens = ISMAManagerAdmin(
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
-        ).getAllowedTokens();
+        ).getAllowedBaseTokens();
 
         bool isAllowedToken = ISMAManagerAdmin(
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
@@ -139,6 +139,89 @@ contract SMA {
     }
     */
     // Reads
+
+    /**
+     * Function to get the asset balances of the SMA
+     */
+    function getAssetBalances() external view returns (SMAStructs.Asset[] memory) {
+        SMAStructs.OperableToken[] memory allowedBaseTokens;
+        SMAStructs.InterestTokens[] memory allowedInterestTokens;
+
+        allowedBaseTokens = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getAllowedBaseTokens();
+
+        allowedInterestTokens = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getAllowedInterestTokens();
+
+        uint256 balanceIterator = 0;
+        SMAStructs.Asset[] memory assetBalances = new SMAStructs.Asset[](allowedBaseTokens.length + allowedInterestTokens.length);
+
+        for (uint256 i = 0; i < allowedBaseTokens.length; i++) {
+            assetBalances[balanceIterator] = SMAStructs.Asset({
+                tokenAddress: allowedBaseTokens[i].tokenAddress,
+                tokenSymbol: allowedBaseTokens[i].tokenSymbol,
+                tokenBalance: IERC20(allowedBaseTokens[i].tokenAddress).balanceOf(address(this))
+            });
+            balanceIterator++;
+        }
+
+        for (uint256 i = 0; i < allowedInterestTokens.length; i++) {
+            assetBalances[balanceIterator] = SMAStructs.Asset({
+                tokenAddress: allowedInterestTokens[i].tokenAddress,
+                tokenSymbol: allowedInterestTokens[i].tokenSymbol,
+                tokenBalance: IERC20(allowedInterestTokens[i].tokenAddress).balanceOf(address(this))
+            });
+            balanceIterator++;
+        }
+
+        return assetBalances;
+    }
+
+    /**
+     * Function to get the balance of a specific asset
+     * 
+     * @param _asset: Address of the asset
+     */
+    function getAssetBalance(address _asset) external view returns (SMAStructs.Asset memory) {
+        SMAStructs.OperableToken[] memory allowedBaseTokens;
+        SMAStructs.InterestTokens[] memory allowedInterestTokens;
+
+        allowedBaseTokens = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getAllowedBaseTokens();
+
+        allowedInterestTokens = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getAllowedInterestTokens();
+
+        for (uint256 i = 0; i < allowedBaseTokens.length; i++) {
+            if (allowedBaseTokens[i].tokenAddress == _asset) {
+                return SMAStructs.Asset({
+                    tokenAddress: allowedBaseTokens[i].tokenAddress,
+                    tokenSymbol: allowedBaseTokens[i].tokenSymbol,
+                    tokenBalance: IERC20(allowedBaseTokens[i].tokenAddress).balanceOf(address(this))
+                });
+            }
+        }
+
+        for (uint256 i = 0; i < allowedInterestTokens.length; i++) {
+            if (allowedInterestTokens[i].tokenAddress == _asset) {
+                return SMAStructs.Asset({
+                    tokenAddress: allowedInterestTokens[i].tokenAddress,
+                    tokenSymbol: allowedInterestTokens[i].tokenSymbol,
+                    tokenBalance: IERC20(allowedInterestTokens[i].tokenAddress).balanceOf(address(this))
+                });
+            }
+        }
+
+        return SMAStructs.Asset({
+            tokenAddress: address(0),
+            tokenSymbol: "",
+            tokenBalance: 0
+        });
+    }
 
     // Modifiers
     modifier onlyManager {
