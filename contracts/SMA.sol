@@ -101,11 +101,12 @@ contract SMA {
 
         require(currAssetBalanace > 0, "No assets to invest.");
 
-        IERC20(_asset).approve(mangementLogicAddress, currAssetBalanace);
+        bool transferSuccess = IERC20(_asset).transfer(mangementLogicAddress, currAssetBalanace);
+        require(transferSuccess, "Transfer failed. Please try again.");
+
         IManagementLogic(
             mangementLogicAddress
         ).invest(_asset, currAssetBalanace, _fromProto, _toProto);
-        IERC20(_asset).approve(mangementLogicAddress, 0);
     }
 
     /**

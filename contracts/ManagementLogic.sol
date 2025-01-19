@@ -43,10 +43,7 @@ contract ManagementLogic {
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
         ).getIsAllowedInterestToken(_asset);
 
-        bool isOperable = isAllowedBaseToken || isAllowedInterestToken;
-        require(isOperable, "Asset is not operable.");
-
-        IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
+        require(isAllowedBaseToken || isAllowedInterestToken, "Asset is not operable.");
 
         tokenToInvest = _determineTxnToken(_asset);
         
