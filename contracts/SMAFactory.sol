@@ -4,7 +4,7 @@ pragma solidity ^0.8.27;
 
 import "./SMA.sol"; // SMA contract
 import "./data_structs/SMAStructs.sol"; // Various structs for the SMA contract to operate
-import {ISMAManagerAdmin, ISMAAddressProvider, ISMAOracle} from "./interfaces/SMAInterfaces.sol"; // Various interfaces for the SMA contract to operate
+import {ISMAManagerAdmin, ISMAAddressProvider, ISMAOracle, IManagementRegistry} from "./interfaces/SMAInterfaces.sol"; // Various interfaces for the SMA contract to operate
 /*
 This contract will facilitate the deploy of new SMA contracts that the client and
 the bots that will manage the protfolio, will share.
@@ -20,8 +20,7 @@ contract SMAFactory {
     event SMACreated(
         address indexed  _sma,
         address indexed _client,
-        uint256 timestamp,
-        string message
+        uint256 indexed timestamp
     );
 
     constructor(address _smaAddressProvider) {
@@ -73,11 +72,17 @@ contract SMAFactory {
         emit SMACreated(
             contractAddress,
             _prospectiveClient,
-            block.timestamp,
-            "SMA created"
+            block.timestamp
         );
 
         NUM_SMAS_DEPLOYED++;
+
+        IManagementRegistry(
+            ISMAAddressProvider(smaAddressProvider).getManagementRegistry()
+        ).setIsActiveSMA(contractAddress, true);
+
+        address payable adminWallet = payable(admin.getWalletAdmin());
+        adminWallet.transfer(msg.value);
     }
 
 }

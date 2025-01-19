@@ -11,8 +11,8 @@ contract ManagementLogic {
     address public smaAddressProvider;
 
     event InvestAction(
-        address sma,
-        address asset,
+        address indexed sma,
+        address indexed asset,
         string fromProto,
         string toProto,
         uint256 amount,

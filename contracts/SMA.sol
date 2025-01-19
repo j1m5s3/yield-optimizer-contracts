@@ -36,29 +36,24 @@ contract SMA {
 
     // Writes
 
-    /*
-    Function to set the manager of the SMA. Only the admin can call this function
-
-    @param _manager: Address of the new manager
+    /**
+    * Function to set the manager of the SMA. Only the admin can call this function
+    *
+    * @param _manager: Address of the new manager
     */
     function setManager(address _manager) external onlyAdmin {
         manager = _manager;
     }
 
-    /*
-    Function to transfer assets from client to the SMA. Only the client can call this function
-
-    @param _asset: Address of the asset to transfer
-    @param _amount: Amount of the asset to transfer
+    /**
+    * Function to transfer assets from client to the SMA. Only the client can call this function
+    *
+    * @param _asset: Address of the asset to transfer
+    * @param _amount: Amount of the asset to transfer
     */
     function transferFromClient(address _asset, uint256 _amount) external onlyClient {
         bool transferSuccess;
         IERC20 token;
-        SMAStructs.OperableToken[] memory allowedTokens;
-
-        allowedTokens = ISMAManagerAdmin(
-            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
-        ).getAllowedBaseTokens();
 
         bool isAllowedToken = ISMAManagerAdmin(
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
@@ -68,9 +63,7 @@ contract SMA {
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
         ).getIsAllowedInterestToken(_asset);
 
-        bool isOperable = isAllowedToken || isAllowedInterestToken;
-
-        require(isOperable, "Asset is not operable.");
+        require(isAllowedToken || isAllowedInterestToken, "Asset is not operable.");
 
         token = IERC20(_asset);
 
@@ -80,11 +73,11 @@ contract SMA {
         require(transferSuccess, "Transfer failed. Please try again.");
     }
 
-    /*
-    Function to transfer assets from the SMA to allowed addresses (client, manager, admin)
-
-    @param _asset: Address of the asset to transfer
-    @param _amount: Amount of the asset to transfer
+    /**
+    * Function to transfer assets from the SMA to allowed addresses (client, manager, admin)
+    *
+    * @param _asset: Address of the asset to transfer
+    * @param _amount: Amount of the asset to transfer
     */
     function transferFromSMA(address _asset, uint256 _amount) external onlyClient {
         bool transferSuccess;
@@ -115,6 +108,10 @@ contract SMA {
         IERC20(_asset).approve(mangementLogicAddress, 0);
     }
 
+    /**
+    *   Function to withdraw assets from the SMA
+    *   @param _active: Boolean to set the active management status
+    */
     function setActiveManagement(bool _active) external onlyClient {
         IManagementRegistry(
             ISMAAddressProvider(smaAddressProvider).getManagementRegistry()
@@ -141,8 +138,8 @@ contract SMA {
     // Reads
 
     /**
-     * Function to get the asset balances of the SMA
-     */
+    * Function to get the asset balances of the SMA
+    */
     function getAssetBalances() external view returns (SMAStructs.Asset[] memory) {
         SMAStructs.OperableToken[] memory allowedBaseTokens;
         SMAStructs.InterestTokens[] memory allowedInterestTokens;

@@ -14,8 +14,7 @@ contract ManagementRegistry {
 
     event ManagementStatusChanged(
         address indexed _contract, 
-        bool _isActiveSMA, 
-        bool _isActivelyManaged
+        bool indexed _isActivelyManaged
     );
 
     constructor(address _addressProvider) {
@@ -26,8 +25,9 @@ contract ManagementRegistry {
         managementRegistry[_contract] = _botId;
     }
 
-    function setIsActivelyManaged(address _contract, bool _isActivelyManaged) external onlyAdminOrFactory {
+    function setIsActivelyManaged(address _contract, bool _isActivelyManaged) external onlySMAOrAdmin() {
         isActivelyManaged[_contract] = _isActivelyManaged;
+        emit ManagementStatusChanged(_contract, _isActivelyManaged);
     }
 
     function setIsActiveSMA(address _contract, bool _isSMA) external onlyAdminOrFactory {
@@ -53,6 +53,15 @@ contract ManagementRegistry {
             ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
         ).getWalletAdmin();
         require(msg.sender == smaFactory || msg.sender == walletAdmin, "Only SMA contract can access");
+        _;
+    }
+
+    modifier onlySMAOrAdmin {
+        address walletAdmin = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getWalletAdmin();
+        bool isSMA = isActiveSMA[msg.sender];
+        require(isSMA || walletAdmin == msg.sender, "Only SMA contract can access");
         _;
     }
 }
