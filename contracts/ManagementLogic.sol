@@ -13,10 +13,9 @@ contract ManagementLogic {
     event InvestAction(
         address indexed sma,
         address indexed asset,
-        string fromProto,
-        string toProto,
-        uint256 amount,
-        uint256 timestamp
+        uint256 indexed amount,
+        address fromProtoAddress,
+        address toProtoProtoaddress
     );
 
     constructor(address _smaAddressProvider) {
@@ -48,13 +47,15 @@ contract ManagementLogic {
         tokenToInvest = _determineTxnToken(_asset);
         
         // Withdraw from the fromProto
+        address fromProtoAddress = address(0);
         if (isAllowedInterestToken) {
-            _withdraw(tokenToInvest, _amount, _fromProto);
+            fromProtoAddress = _withdraw(tokenToInvest, _amount, _fromProto);
         }
         
-
         // Deposit to the toProto
-        _deposit(tokenToInvest, _amount, _toProto);
+        address toProtoAddress = _deposit(tokenToInvest, _amount, _toProto);
+
+        emit InvestAction(msg.sender, _asset, _amount, fromProtoAddress, toProtoAddress);
     }
 
     function _determineTxnToken(address _asset) internal view returns (address) {
@@ -72,7 +73,7 @@ contract ManagementLogic {
         return _asset;
     }
 
-    function _withdraw(address _asset, uint256 _amount, string memory _fromProto) internal {
+    function _withdraw(address _asset, uint256 _amount, string memory _fromProto) internal  returns (address) {
         address fromProtoAddress = ISMAAddressProvider(smaAddressProvider).getProtocolAddress(_fromProto);
 
         require(fromProtoAddress != address(0), "Protocol not found");
@@ -85,14 +86,17 @@ contract ManagementLogic {
         } else {
             revert("Protocol not found");
         }
+
+        return fromProtoAddress;
     }
 
-    function _deposit(address _asset, uint256 _amount, string memory _toProto) internal {
+    function _deposit(address _asset, uint256 _amount, string memory _toProto) internal returns (address) {
         address toProtoAddress = ISMAAddressProvider(smaAddressProvider).getProtocolAddress(_toProto);
 
         require(toProtoAddress != address(0), "Protocol not found");
 
         // Deposit to the toProto
+        IERC20(_asset).approve(toProtoAddress, _amount);
         if(keccak256(abi.encodePacked(_toProto)) == keccak256(abi.encodePacked("AAVE"))) {
             IAAVEPool(toProtoAddress).supply(_asset, _amount, msg.sender, 0);
         } else if(keccak256(abi.encodePacked(_toProto)) == keccak256(abi.encodePacked("COMPOUND"))) {
@@ -100,6 +104,9 @@ contract ManagementLogic {
         } else {
             revert("Protocol not found");
         }
+        IERC20(_asset).approve(toProtoAddress, 0);
+
+        return toProtoAddress;
     }
 
     function transferFromContract(address _asset, address _to, uint256 _amount) external onlyAdmin {
