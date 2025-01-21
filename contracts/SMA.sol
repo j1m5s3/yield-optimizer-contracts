@@ -29,6 +29,7 @@ contract SMA {
         timeCreated = block.timestamp;
         nextPaymentDue = timeCreated + 30 days; // Pay periods are 30 days
         subscriptionPaid = false;
+        activelyManaged = false;
     }
 
     // Function to receive Ether. msg.data must be empty
@@ -117,6 +118,8 @@ contract SMA {
         IManagementRegistry(
             ISMAAddressProvider(smaAddressProvider).getManagementRegistry()
         ).setIsActivelyManaged(address(this), _active);
+
+        activelyManaged = _active;
     }
 
     /*

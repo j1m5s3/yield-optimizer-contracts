@@ -55,7 +55,7 @@ contract ManagementLogic {
         // Deposit to the toProto
         address toProtoAddress = _deposit(tokenToInvest, _amount, _toProto);
 
-        emit InvestAction(msg.sender, _asset, _amount, fromProtoAddress, toProtoAddress);
+        emit InvestAction(msg.sender, tokenToInvest, _amount, fromProtoAddress, toProtoAddress);
     }
 
     function _determineTxnToken(address _asset) internal view returns (address) {
