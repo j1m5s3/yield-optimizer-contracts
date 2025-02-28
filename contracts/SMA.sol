@@ -163,7 +163,8 @@ contract SMA {
             assetBalances[balanceIterator] = SMAStructs.Asset({
                 tokenAddress: allowedBaseTokens[i].tokenAddress,
                 tokenSymbol: allowedBaseTokens[i].tokenSymbol,
-                tokenBalance: IERC20(allowedBaseTokens[i].tokenAddress).balanceOf(address(this))
+                tokenBalance: IERC20(allowedBaseTokens[i].tokenAddress).balanceOf(address(this)),
+                decimals: allowedBaseTokens[i].decimals
             });
             balanceIterator++;
         }
@@ -172,7 +173,8 @@ contract SMA {
             assetBalances[balanceIterator] = SMAStructs.Asset({
                 tokenAddress: allowedInterestTokens[i].tokenAddress,
                 tokenSymbol: allowedInterestTokens[i].tokenSymbol,
-                tokenBalance: IERC20(allowedInterestTokens[i].tokenAddress).balanceOf(address(this))
+                tokenBalance: IERC20(allowedInterestTokens[i].tokenAddress).balanceOf(address(this)),
+                decimals: allowedInterestTokens[i].decimals
             });
             balanceIterator++;
         }
@@ -202,7 +204,8 @@ contract SMA {
                 return SMAStructs.Asset({
                     tokenAddress: allowedBaseTokens[i].tokenAddress,
                     tokenSymbol: allowedBaseTokens[i].tokenSymbol,
-                    tokenBalance: IERC20(allowedBaseTokens[i].tokenAddress).balanceOf(address(this))
+                    tokenBalance: IERC20(allowedBaseTokens[i].tokenAddress).balanceOf(address(this)),
+                    decimals: allowedBaseTokens[i].decimals
                 });
             }
         }
@@ -212,7 +215,8 @@ contract SMA {
                 return SMAStructs.Asset({
                     tokenAddress: allowedInterestTokens[i].tokenAddress,
                     tokenSymbol: allowedInterestTokens[i].tokenSymbol,
-                    tokenBalance: IERC20(allowedInterestTokens[i].tokenAddress).balanceOf(address(this))
+                    tokenBalance: IERC20(allowedInterestTokens[i].tokenAddress).balanceOf(address(this)),
+                    decimals: allowedInterestTokens[i].decimals
                 });
             }
         }
@@ -220,7 +224,8 @@ contract SMA {
         return SMAStructs.Asset({
             tokenAddress: address(0),
             tokenSymbol: "",
-            tokenBalance: 0
+            tokenBalance: 0,
+            decimals: 0
         });
     }
 

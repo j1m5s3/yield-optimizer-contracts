@@ -44,16 +44,28 @@ contract SMAManagerAdmin {
     }
 
     // Writes
-    function addAllowedToken(address _tokenAddress, string memory _tokenSymbol) external onlyAdmin{
-        allowedBaseTokens.push(SMAStructs.OperableToken(_tokenAddress, _tokenSymbol));
+    function addAllowedToken(
+        address _tokenAddress, 
+        string memory _tokenSymbol, 
+        uint8 _decimals
+    ) external onlyAdmin{
+        allowedBaseTokens.push(SMAStructs.OperableToken(_tokenAddress, _tokenSymbol, _decimals));
     }
 
     function setIsAllowedToken(address _tokenAddress, bool _isAllowed) external onlyAdmin{
         isAllowedToken[_tokenAddress] = _isAllowed;
     }
 
-    function addAllowedInterestToken(address _tokenAddress, string memory _tokenSymbol, string memory _protocol, address _baseToken) external onlyAdmin{
-        allowedInterestTokens.push(SMAStructs.InterestTokens(_tokenAddress, _tokenSymbol, _protocol, _baseToken));
+    function addAllowedInterestToken(
+        address _tokenAddress, 
+        string memory _tokenSymbol, 
+        string memory _protocol, 
+        address _baseToken, 
+        uint8 _decimals
+    ) external onlyAdmin{
+        allowedInterestTokens.push(SMAStructs.InterestTokens(
+            _tokenAddress, _tokenSymbol, _protocol, _baseToken, _decimals
+        ));
     }
 
     function setIsAllowedInterestToken(address _tokenAddress, bool _isAllowed) external onlyAdmin{

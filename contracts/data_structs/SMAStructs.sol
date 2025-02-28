@@ -7,6 +7,7 @@ library SMAStructs {
     struct OperableToken {
         address tokenAddress;
         string tokenSymbol;
+        uint8 decimals;
     }
 
     struct InterestTokens {
@@ -14,6 +15,7 @@ library SMAStructs {
         string tokenSymbol;
         string protocol;
         address baseToken;
+        uint8 decimals;
     }
 
     struct SMA {
@@ -27,5 +29,6 @@ library SMAStructs {
         address tokenAddress; // Address of the token
         string tokenSymbol; // Symbol of the token
         uint256 tokenBalance; // Balance of the token
+        uint8 decimals; // Decimals of the token
     }
 }

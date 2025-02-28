@@ -21,10 +21,11 @@ const ManagerAdminModule = buildModule("ManagerAdminModule", (m) => {
   const cUSDCSymbol = m.getParameter("cUSDC_SYMBOL");
   const aUSDCProtocol = m.getParameter("aUSDC_PROTOCOL");
   const cUSDCProtocol = m.getParameter("cUSDC_PROTOCOL");
+  const usdcDecimals = m.getParameter("USDC_DECIMALS");
 
-  const allowUSDCParams = [usdcAddress, usdcSymbol];
-  const allowAUSDCParams = [aUSDCAddress, aUSDCSymbol, aUSDCProtocol, usdcAddress];
-  const allowCUSDCParams = [cUSDCAddress, cUSDCSymbol, cUSDCProtocol, usdcAddress];
+  const allowUSDCParams = [usdcAddress, usdcSymbol, usdcDecimals];
+  const allowAUSDCParams = [aUSDCAddress, aUSDCSymbol, aUSDCProtocol, usdcAddress, usdcDecimals];
+  const allowCUSDCParams = [cUSDCAddress, cUSDCSymbol, cUSDCProtocol, usdcAddress, usdcDecimals];
 
   const managerAdmin = m.contract("SMAManagerAdmin", managerAdminParams);
 

@@ -85,4 +85,16 @@ contract SMAFactory {
         adminWallet.transfer(msg.value);
     }
 
+    // Reads
+
+    // Function to get the number of SMAs deployed
+    function getNumSMAsDeployed() external view returns (uint256) {
+        return NUM_SMAS_DEPLOYED;
+    }
+
+    // Function to get the SMA contract address of a user
+    function getClientSMAAddress(address _client) external view returns (address) {
+        return USER_TO_SMA_MAPPING[_client];
+    }
+
 }
