@@ -82,13 +82,13 @@ contract SMA {
     */
     function transferFromSMA(address _asset, uint256 _amount) external onlyClient {
         bool transferSuccess;
-        bool approved;
+        // bool approved;
         IERC20 token;
 
         token = IERC20(_asset);
 
-        approved = token.approve(address(this), _amount);
-        require(approved, "Approval failed. Please try again.");
+        // approved = token.approve(address(this), _amount);
+        // require(approved, "Approval failed. Please try again.");
 
 
         transferSuccess = token.transfer(client, _amount);

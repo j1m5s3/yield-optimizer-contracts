@@ -63,6 +63,8 @@ const SMASuiteModule = buildModule("SMASuiteModule", (m) => {
   const { managerAdmin } = m.useModule(ManagerAdminModule);
 
   const keeperAddress = m.getParameter("oracleKeeper");
+  const initBestRateProtocol = m.getParameter("initBestRateProtocol");
+  const usdcAddress = m.getParameter("USDC");
 
   const managementRegistry = m.contract("ManagementRegistry", [addressProvider]);
   const managementLogic = m.contract("ManagementLogic", [addressProvider]);
@@ -75,6 +77,8 @@ const SMASuiteModule = buildModule("SMASuiteModule", (m) => {
   m.call(addressProvider, "setOracle", [smaOracle]);
 
   m.call(managerAdmin, "setFactoryAddress", [smaFactory]);
+
+  m.call(smaOracle, "setBestRateProtocol", [usdcAddress, initBestRateProtocol], {id: "setBestRateProtocolUSDC"});
 
   return { managementRegistry, managementLogic, smaFactory, smaOracle };
 });
