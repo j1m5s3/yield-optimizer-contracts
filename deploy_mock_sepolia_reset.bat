@@ -1,0 +1,1 @@
+npx hardhat ignition deploy .\ignition\modules\DeployMockSuite.js --network sepolia --parameters .\ignition\parameters_mock_sepolia.json --deployment-id mockSuite --reset

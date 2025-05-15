@@ -13,9 +13,6 @@ contract MockcUSDC is IERC20 {
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
 
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-
     function totalSupply() external view override returns (uint256) {
         return _totalSupply;
     }

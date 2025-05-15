@@ -16,10 +16,8 @@ contract MockCOMPComet is ICompoundPool {
     // Mapping to track cToken addresses for each asset
     mapping(address => address) public cTokens;
 
-    constructor() {
-        // Deploy MockcUSDC and set it as the cToken for USDC
-        MockcUSDC mcUSDC = new MockcUSDC();
-        cTokens[address(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48)] = address(mcUSDC); // USDC mainnet address
+    constructor(address _usdcAddr, address _cUSDCAddr) {
+        cTokens[_usdcAddr] = _cUSDCAddr; // USDC mainnet address
     }
 
     function supply(address asset, uint amount) external override {

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: GPL-3.0
 
 pragma solidity ^0.8.27;
 
@@ -16,10 +16,8 @@ contract MockAAVEPool is IAAVEPool {
     // Mapping to track aToken addresses for each asset
     mapping(address => address) public aTokens;
 
-    constructor() {
-        // Deploy MockaUSDC and set it as the aToken for USDC
-        MockaUSDC maUSDC = new MockaUSDC();
-        aTokens[address(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48)] = address(maUSDC); // USDC mainnet address
+    constructor(address _usdcAddr, address _aUSDCAddr) {
+        aTokens[_usdcAddr] = _aUSDCAddr; // USDC mainnet address
     }
 
     function supply(
