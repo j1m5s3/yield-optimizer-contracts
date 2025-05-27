@@ -1,0 +1,1 @@
+npx hardhat ignition deploy .\ignition\modules\DeploySMASuite.js --network sepolia --parameters .\ignition\parameters_sepolia_with_mock.json --deployment-id sma_with_mock --reset

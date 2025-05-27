@@ -103,6 +103,7 @@ interface ISMAManagerAdmin {
 
     //write
     function addSMA(address _client, SMAStructs.SMA memory _sma) external;
+    function removeSMA(address _client) external;
 }
 
 interface ISMAOracle {
@@ -139,4 +140,12 @@ interface IManagementRegistry {
     function getManagement(address _contract) external view returns (bytes32);
 
     function getIsActiveSMA(address _contract) external view returns (bool);
+}
+
+interface ISMAFactory {
+    function getNumSMAsDeployed() external view returns (uint256);
+
+    function getClientSMAAddress(address _client) external view returns (address);
+
+    function deleteClientSMAAddress(address _client) external;
 }

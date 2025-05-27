@@ -97,4 +97,22 @@ contract SMAFactory {
         return USER_TO_SMA_MAPPING[_client];
     }
 
+    function deleteClientSMAAddress(address _client) external onlyAdmin {
+        delete USER_TO_SMA_MAPPING[_client];
+
+        ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).removeSMA(_client);
+
+        NUM_SMAS_DEPLOYED--;
+    }
+
+    modifier onlyAdmin{
+        address admin = ISMAManagerAdmin(
+            ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin()
+        ).getWalletAdmin();
+        require(msg.sender == admin, "Only admin can access this. You are not the admin.");
+        _;
+    }
+
 }

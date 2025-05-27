@@ -88,6 +88,11 @@ contract SMAManagerAdmin {
         SMAs[_client] = _sma;
     }
 
+    // TEMP FUNCTION TO REMOVE SMA
+    function removeSMA(address _client) external onlyAdminOrFactory{
+        delete SMAs[_client];
+    }
+
     function setFactoryAddress(address _factoryAddress) external onlyAdmin{
         factoryAddress = _factoryAddress;
     }
