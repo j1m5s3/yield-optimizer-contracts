@@ -7,7 +7,7 @@ import { IERC20 } from "../interfaces/SMAInterfaces.sol";
 contract MockcUSDC is IERC20 {
     string public constant name = "Mock Compound USDC";
     string public constant symbol = "mcUSDC";
-    uint8 public constant decimals = 8; // Compound uses 8 decimals for cTokens
+    uint8 public constant decimals = 6; // Compound uses 8 decimals for cTokens
     uint256 private _totalSupply;
     
     mapping(address => uint256) private _balances;
