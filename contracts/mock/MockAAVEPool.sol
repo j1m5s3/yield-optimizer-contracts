@@ -7,9 +7,6 @@ import { IERC20 } from "../interfaces/SMAInterfaces.sol";
 import "./MockaUSDC.sol";
 
 contract MockAAVEPool is IAAVEPool {
-    // Mapping to track user balances for each asset
-    mapping(address => mapping(address => uint256)) public userBalances;
-    
     // Mapping to track total supply for each asset
     mapping(address => uint256) public totalSupply;
 
@@ -26,16 +23,17 @@ contract MockAAVEPool is IAAVEPool {
         address onBehalfOf,
         uint16 referralCode
     ) external override {
+        // Check if the asset is supported
+        address aToken = aTokens[asset];
+        require(aToken != address(0), "Asset not supported");
+
         // Transfer tokens from the user to this contract
         IERC20(asset).transferFrom(msg.sender, address(this), amount);
         
         // Update balances
-        userBalances[onBehalfOf][asset] += amount;
         totalSupply[asset] += amount;
 
         // Mint aTokens to the user
-        address aToken = aTokens[asset];
-        require(aToken != address(0), "Asset not supported");
         MockaUSDC(aToken).mint(onBehalfOf, amount);
     }
 
@@ -44,15 +42,16 @@ contract MockAAVEPool is IAAVEPool {
         uint256 amount,
         address to
     ) external override returns (uint256) {
-        require(userBalances[msg.sender][asset] >= amount, "Insufficient balance");
+        // Check if the asset is supported
+        address aToken = aTokens[asset];
+        require(aToken != address(0), "Asset not supported");
+
+        require(MockaUSDC(aToken).balanceOf(msg.sender) >= amount, "Insufficient balance");
         
         // Update balances
-        userBalances[msg.sender][asset] -= amount;
         totalSupply[asset] -= amount;
         
         // Burn aTokens from the user
-        address aToken = aTokens[asset];
-        require(aToken != address(0), "Asset not supported");
         MockaUSDC(aToken).burn(msg.sender, amount);
         
         // Transfer tokens to the specified address

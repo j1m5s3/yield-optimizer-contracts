@@ -51,6 +51,9 @@ contract ManagementLogic {
         if (isAllowedInterestToken) {
             fromProtoAddress = _withdraw(tokenToInvest, _amount, _fromProto);
         }
+
+        // TODO: Use number codes to id protocol or abscence of protocol
+        // TODO: Add withdraw only if no from protocol provided
         
         // Deposit to the toProto
         address toProtoAddress = _deposit(tokenToInvest, _amount, _toProto);
@@ -82,7 +85,7 @@ contract ManagementLogic {
         if(keccak256(abi.encodePacked(_fromProto)) == keccak256(abi.encodePacked("AAVE"))) {
             IAAVEPool(fromProtoAddress).withdraw(_asset, _amount, address(this));
         } else if(keccak256(abi.encodePacked(_fromProto)) == keccak256(abi.encodePacked("COMPOUND"))) {
-            ICompoundPool(fromProtoAddress).withdraw(_asset, _amount);
+            ICompoundPool(fromProtoAddress).withdrawTo(address(this), _asset, _amount);
         } else {
             revert("Protocol not found");
         }

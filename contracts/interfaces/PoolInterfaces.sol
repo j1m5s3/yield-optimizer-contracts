@@ -36,4 +36,5 @@ interface ICompoundPool {
     function supply(address asset, uint amount) external;
     function supplyTo(address dst, address asset, uint amount) external;
     function withdraw(address asset, uint amount) external;
+    function withdrawTo(address to, address asset, uint amount) external;
 }

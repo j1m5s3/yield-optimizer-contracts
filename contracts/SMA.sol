@@ -19,8 +19,8 @@ contract SMA {
 
     bool public subscriptionPaid; // Boolean describing if the client has paid their subscription
     bool public activelyManaged; // Boolean describing if the SMA is actively managed
-    uint256 timeCreated; // Timestamp of when SMA was created
-    uint256 nextPaymentDue; // Timestamp of when the next payment is due
+    uint256 public timeCreated; // Timestamp of when SMA was created
+    uint256 public nextPaymentDue; // Timestamp of when the next payment is due
 
     constructor(address _client, address _addressProvider) {
         client = _client;
