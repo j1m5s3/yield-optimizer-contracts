@@ -130,6 +130,8 @@ interface ISMAAddressProvider {
     function getManagementLogic() external view returns (address);
 
     function getManagementRegistry() external view returns (address);
+
+    function getRevenuePool() external view returns (address);
 }
 
 interface IManagementRegistry {
@@ -148,4 +150,8 @@ interface ISMAFactory {
     function getClientSMAAddress(address _client) external view returns (address);
 
     function deleteClientSMAAddress(address _client) external;
+}
+
+interface IRevenuePool {
+    function depositSubscription(address _client) external payable;
 }

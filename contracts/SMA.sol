@@ -7,7 +7,8 @@ import {
     ISMAAddressProvider, 
     IERC20, 
     IManagementLogic, 
-    IManagementRegistry
+    IManagementRegistry,
+    IRevenuePool
 } from "./interfaces/SMAInterfaces.sol";
 import {SMAUtils} from "./utils/SMAUtils.sol";
 import {SMAStructs} from "./data_structs/SMAStructs.sol";
@@ -122,23 +123,24 @@ contract SMA {
         activelyManaged = _active;
     }
 
-    /*
     function paySubscription() external onlyClient {
         bool transferSuccess;
-        smaInterfaces.IERC20 token;
 
+        address managerAdminAddress = ISMAAddressProvider(smaAddressProvider).getSMAManagerAdmin();
+        address revenuePoolAddress = ISMAAddressProvider(smaAddressProvider).getRevenuePool();
+        address payTokenAddress = ISMAManagerAdmin(managerAdminAddress).getPayToken();
+        IERC20 token = IERC20(payTokenAddress);
+
+        uint256 subscriptionFee = ISMAManagerAdmin(managerAdminAddress).getSubscriptionFee();
+
+        require(token.balanceOf(msg.sender) >= subscriptionFee, "Insufficient balance.");
         require(subscriptionPaid == false, "Subscription already paid.");
+        require(token.allowance(client, revenuePoolAddress) >= subscriptionFee, "Allowance not enough. Please approve more tokens.");
 
-        token = smaInterfaces.IERC20(UtilsLib.SMAUtils.allowedPayToken());
-        require(token.allowance(msg.sender, address(this)) >= SMAUtils.subscriptionFee(), "Allowance not enough. Please approve more tokens.");
-
-        transferSuccess = token.transferFrom(client, address(this), SMAUtils.subscriptionFee());
-        require(transferSuccess, "Transfer failed. Please try again.");
-
-        subscriptionPaid = true;
-        nextPaymentDue = nextPaymentDue + SMAUtils.payPeriod();
+        // Need to have transfer be for the revenue pool
+        IRevenuePool(revenuePoolAddress).depositSubscription(msg.sender);
     }
-    */
+    
     // Reads
 
     /**

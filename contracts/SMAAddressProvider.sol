@@ -11,6 +11,7 @@ contract SMAAddressProvider {
     address public smaOracle;
     address public managementLogic;
     address public managementRegistry;
+    address public revenuePool;
 
     mapping (string => address) PROTOCOL_ADDRESSES;
 
@@ -46,6 +47,10 @@ contract SMAAddressProvider {
         return managementRegistry;
     }
 
+    function getRevenuePool() external view returns (address) {
+        return revenuePool;
+    }
+
     function setProtocolAddress(string memory _protocolName, address _protocolAddress) external onlyAdmin{
         PROTOCOL_ADDRESSES[_protocolName] = _protocolAddress;
     }
@@ -76,6 +81,10 @@ contract SMAAddressProvider {
 
     function setManagementRegistry(address _managementRegistry) external onlyAdmin{
         managementRegistry = _managementRegistry;
+    }
+
+    function setRevenuePool(address _revenuePool) external onlyAdmin{
+        revenuePool = _revenuePool;
     }
 
     modifier onlyAdmin {
